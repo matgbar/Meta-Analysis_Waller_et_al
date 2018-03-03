@@ -12,32 +12,49 @@ library(metafor)
 library(stargazer)
 library(ggplot2)
 #################################################################################
+#For Windows Laptop
 user<-Sys.getenv('USERPROFILE')
-data.folder<-paste0(user, '\\Box Sync\\CU meta-analysis\\Meta_Raw_Data\\')
-model.folder<-paste0(user, '\\Box Sync\\CU meta-analysis\\Output\\')
-graphics.folder<-paste0(user, '\\Box Sync\\CU meta-analysis\\Graphics_Folder\\' )
+data.folder<-paste0(user, '/Box Sync/CU meta-analysis/Meta_Raw_Data/')
+model.folder<-paste0(user, '/Box Sync/CU meta-analysis/Output/')
+graphics.folder<-paste0(user, '/Box Sync/CU meta-analysis/Graphics_Folder/' )
+
+#################################################################################
+#For Linux workstation
+data.folder<-'~/Documents/CU_meta-analysis/Meta_Raw_Data/'
+model.folder<-'~/Documents/CU_meta-analysis/Output/'
+graphics.folder<-'~/Documents/CU_meta-analysis/Graphics_Folder/'
+
 #################################################################################
 #Notes:   1. Correlations were transformed to Fisher's z
 #         2. Standardized differences were transformed to r then to Fisher's z
 #         3. Will require all results are exponentiated to return to -1:1 scale 
 #################################################################################
-dat<-read.csv(paste0(data.folder, 'Meta dataset_2-15-18.csv'), stringsAsFactors = F)
+dat<-read.csv(paste0(data.folder, 'Copy of Meta dataset_2-20-18(1).csv'), stringsAsFactors = F)
 colnames(dat)[1]<-'id'
 colnames(dat)[23]<-'Out_resp'
 
+#some cleanup and recoding
+dat$CU_resp.R[dat$CU_resp==0]<-'Self'
+dat$CU_resp.R[dat$CU_resp==1]<-'Other'
+dat$Out_resp.R[dat$Out_resp==0]<-'Self'
+dat$Out_resp.R[dat$Out_resp==1]<-'Other'
+dat$Same_diff[dat$CU_resp.R==dat$Out_resp.R]<-0
+dat$Same_diff[dat$CU_resp.R!=dat$Out_resp.R]<-1
+
+dat$Same_diff.R[dat$Same_diff==0]<-'Same'
+dat$Same_diff.R[dat$Same_diff==1]<-'Different'
+
+dat$Samp_typ.R[dat$Samp_typ==1]<-'Referred'
+dat$Samp_typ.R[dat$Samp_typ==0]<-'Community'
+
 dat.Emp_tot<-dat[dat$Outcome=='empathy_tot',]
 dat.Emp_aff<-dat[dat$Outcome=='empathy_aff',]
-dat.Emp_cog<-dat[dat$Outcome=='empathy_cog',]
+dat.Emp_cog<-dat[dat$Outcome=='empathy_cog',] 
 dat.glt<-dat[dat$Outcome=='guilt',]   #note probably have too few for guilt
 dat.prosoc<-dat[dat$Outcome=='prosocial',]
 
 #################################################################################
-#some cleanup and recoding
-dat$CU_resp.R[dat$CU_resp==0]<-'Self'
-dat$CU_resp.R[dat$CU_resp==1]<-'Other'
 
-dat$Out_resp.R[dat$Out_resp==0]<-'Self'
-dat$Out_resp.R[dat$Out_resp==1]<-'Other'
 dat$CU_resp.R[dat$citation=='Kimonis et al. (2016)']<-'Other'
 dat$Out_resp.R[dat$citation=='Kimonis et al. (2016)']<-'Other'
 
@@ -68,7 +85,11 @@ REG.emp_tot
 #Trim and fill model
 fit.emp_tot.TF_R<-trimfill(fit.emp_tot, estimator = 'R0')
 fit.emp_tot.TF_R
+
+jpeg(paste0(graphics.folder, 'R0_estimator_CU-tot_emp_Sup1A.jpeg'), res = 300, width = 7, height = 7, units = 'in')
 funnel(fit.emp_tot.TF_R)
+title(expression('Trim and Fill Results for Total Empathy (R'[0]*' Estimator)'))
+dev.off()
 
 fit.emp_tot.TF_L<-trimfill(fit.emp_tot, estimator = 'L0')
 fit.emp_tot.TF_L
@@ -143,6 +164,11 @@ fit.emp_cog.TF_R<-trimfill(fit.emp_cog, estimator = 'R0')
 fit.emp_cog.TF_R
 funnel(fit.emp_cog.TF_R)
 
+jpeg(paste0(graphics.folder, 'R0_estimator_CU-cog_emp_Sup1C.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.emp_cog.TF_R)
+title(expression('Trim and Fill Results for Cognitive Empathy (R'[0]*' Estimator)'))
+dev.off()
+
 fit.emp_cog.TF_L<-trimfill(fit.emp_cog, estimator = 'L0')
 fit.emp_cog.TF_L
 funnel(fit.emp_cog.TF_L)
@@ -179,6 +205,11 @@ fit.prosoc.TF_R<-trimfill(fit.prosoc, estimator = 'R0')
 fit.prosoc.TF_R
 funnel(fit.prosoc.TF_R)
 
+jpeg(paste0(graphics.folder, 'R0_estimator_CU-prosoc_Sup1B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.prosoc.TF_R)
+title(expression('Trim and Fill Results for Prosociality (R'[0]*' Estimator)'))
+dev.off()
+
 fit.prosoc.TF_L<-trimfill(fit.prosoc, estimator = 'L0')
 fit.prosoc.TF_L
 funnel(fit.prosoc.TF_L)
@@ -204,6 +235,68 @@ jpeg(paste0(graphics.folder, 'CU and Guilt - Funnel.jpeg'), res=300, width = 7, 
 funnel(fit.glt)
 title("Funnel Plot of CU Relation with Guilt (Fisher's z)")
 dev.off()
+
+###########################################################################################
+#Model comparing two forms of empathy - within study differences in effects
+#merging and cleaning data set
+dat.emp_comp<-merge(dat.Emp_aff, dat.Emp_cog, by='id')
+cols<-c(1:5, 12,14,15,22,23,24,39,41,42)
+dat.emp_comp<-dat.emp_comp[,cols]
+colnames(dat.emp_comp)<-c('id', 'citation', 'female', 'age', 'N', 'R.affective',
+                          'Eff_affective', 'Eff_var_affective', 'CU_resp', 'Out_resp',
+                          'Sample', 'R_cognitive', 'Eff_cognitive', 'Eff_var_cognitive')
+
+dat.emp_comp$CU_resp.R[dat.emp_comp$CU_resp==0]<-'Self'
+dat.emp_comp$CU_resp.R[dat.emp_comp$CU_resp==1]<-'Other'
+
+dat.emp_comp$Out_resp.R[dat.emp_comp$Out_resp==0]<-'Self'
+dat.emp_comp$Out_resp.R[dat.emp_comp$Out_resp==1]<-'Other'
+
+#Correlations pulled from studies: 
+Aff_cog_cor<-c(.063, .063, .351, 0, 0, .49, 0, .5, 0, .76, .32,0,-.01,.08,0,.45,0,0)
+
+#Calculating difference in effects and variance terms adjusted for outcome correlation
+Eff<-dat.emp_comp$Eff_affective-dat.emp_comp$Eff_cognitive
+Eff_var<-dat.emp_comp$Eff_var_affective+dat.emp_comp$Eff_var_cognitive-2*Aff_cog_cor*sqrt(dat.emp_comp$Eff_var_affective*dat.emp_comp$Eff_var_cognitive)
+
+dat.emp_comp$Eff<-Eff
+dat.emp_comp$Eff_var<-Eff_var
+#------------------------------------------------------------------------------------------
+#Random effects model for difference in effects:
+fit.emp_comp<-rma(yi=Eff, vi=Eff_var, data=dat.emp_comp)
+summary(fit.emp_comp)
+
+sink(paste0(model.folder, 'Difference in Empathy Dimension Model - no moderators.txt'))
+summary(fit.emp_comp)
+sink()
+
+jpeg(paste0(graphics.folder, 'Difference in Empathy Model - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+forest.rma(fit.emp_comp, order = 'obs', slab=dat.emp_comp$citation)
+title("Difference in Relation between CU and Empathy Dimensions (Fisher's z)")
+dev.off()
+
+jpeg(paste0(graphics.folder, 'Difference in Empathy Dimension Model - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
+funnel(fit.emp_comp)
+title("Funnel Plot of Difference in Relation between CU and Empathy Dimensions")
+dev.off()
+
+#---------------------------------------------------------------------------------
+#testing for publication bias 
+REG.emp_comp<-regtest(fit.emp_comp, model = 'lm')
+REG.emp_comp
+
+#Trim and fill model
+fit.emp_comp.TF_R<-trimfill(fit.emp_comp, estimator = 'R0')
+fit.emp_comp.TF_R
+funnel(fit.emp_comp.TF_R)
+
+fit.emp_comp.TF_L<-trimfill(fit.emp_comp, estimator = 'L0')
+fit.emp_comp.TF_L
+funnel(fit.emp_comp.TF_L)
+
+#file drawer analysis
+fsn(yi=Eff, vi=Eff_var, data=dat.emp_comp, type='Rosenthal', alpha = .05)
+
 
 #############################################################################
 #Combining and transforming back to Pearson's r
@@ -272,66 +365,6 @@ g6
 dev.off()
 
 ###########################################################################################
-#Model comparing two forms of empathy - within study differences in effects
-#merging and cleaning data set
-dat.emp_comp<-merge(dat.Emp_aff, dat.Emp_cog, by='id')
-cols<-c(1:5, 12,14,15,22,23,24,37,39,40)
-dat.emp_comp<-dat.emp_comp[,cols]
-colnames(dat.emp_comp)<-c('id', 'citation', 'female', 'age', 'N', 'R.affective',
-                          'Eff_affective', 'Eff_var_affective', 'CU_resp', 'Out_resp',
-                          'Sample', 'R_cognitive', 'Eff_cognitive', 'Eff_var_cognitive')
-
-dat.emp_comp$CU_resp.R[dat.emp_comp$CU_resp==0]<-'Self'
-dat.emp_comp$CU_resp.R[dat.emp_comp$CU_resp==1]<-'Other'
-
-dat.emp_comp$Out_resp.R[dat.emp_comp$Out_resp==0]<-'Self'
-dat.emp_comp$Out_resp.R[dat.emp_comp$Out_resp==1]<-'Other'
-
-#Correlations pulled from studies: 
-Aff_cog_cor<-c(.063, .063, .351, 0, 0, .49, 0, .5, 0, .76, .32,0,-.01,.08,0,.45,0,0)
-
-#Calculating difference in effects and variance terms adjusted for outcome correlation
-Eff<-dat.emp_comp$Eff_affective-dat.emp_comp$Eff_cognitive
-Eff_var<-dat.emp_comp$Eff_var_affective+dat.emp_comp$Eff_var_cognitive-2*Aff_cog_cor*sqrt(dat.emp_comp$Eff_var_affective*dat.emp_comp$Eff_var_cognitive)
-
-dat.emp_comp$Eff<-Eff
-dat.emp_comp$Eff_var<-Eff_var
-#------------------------------------------------------------------------------------------
-#Random effects model for difference in effects:
-fit.emp_comp<-rma(yi=Eff, vi=Eff_var, data=dat.emp_comp)
-summary(fit.emp_comp)
-
-sink(paste0(model.folder, 'Difference in Empathy Dimension Model - no moderators.txt'))
-summary(fit.emp_comp)
-sink()
-
-jpeg(paste0(graphics.folder, 'Difference in Empathy Model - Forest.jpeg'), res=300, width = 7, height=7, units='in')
-forest.rma(fit.emp_comp, order = 'obs', slab=dat.emp_comp$citation)
-title("Difference in Relation between CU and Empathy Dimensions (Fisher's z)")
-dev.off()
-
-jpeg(paste0(graphics.folder, 'Difference in Empathy Dimension Model - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
-funnel(fit.emp_comp)
-title("Funnel Plot of Difference in Relation between CU and Empathy Dimensions")
-dev.off()
-
-#---------------------------------------------------------------------------------
-#testing for publication bias 
-REG.emp_comp<-regtest(fit.emp_comp, model = 'lm')
-REG.emp_comp
-
-#Trim and fill model
-fit.emp_comp.TF_R<-trimfill(fit.emp_comp, estimator = 'R0')
-fit.emp_comp.TF_R
-funnel(fit.emp_comp.TF_R)
-
-fit.emp_comp.TF_L<-trimfill(fit.emp_comp, estimator = 'L0')
-fit.emp_comp.TF_L
-funnel(fit.emp_comp.TF_L)
-
-#file drawer analysis
-fsn(yi=Eff, vi=Eff_var, data=dat.emp_comp, type='Rosenthal', alpha = .05)
-###########################################################################################
 #Unconditional Models (no moderators - publication graphics)
 #Fitting two summary graphics (one for affective vs. cognitive) & one for summary vals
 dat.graph1<-dat[dat$Outcome=='empathy_aff' | dat$Outcome=='empathy_cog',]
@@ -341,14 +374,15 @@ par(mar=c(4,4,1,2))
 
 jpeg(paste0(graphics.folder,'Affective vs. Cognitive Empathy.jpeg'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.75, font=1)
-forest(fit.graph1, xlim=c(-10, 2), 
+forest(fit.graph1, xlim=c(-16, 2), 
        order = order(dat.graph1$Outcome), 
        ilab = cbind(dat.graph1$N, 
                     dat.graph1$female, 
                     dat.graph1$age, 
                     dat.graph1$CU_resp.R, 
-                    dat.graph1$Out_resp.R),
-       ilab.xpos = c(-7, -6.5, -5.5, -4.5, -3), 
+                    dat.graph1$Out_resp.R, 
+                    dat.graph1$Samp_typ.R),
+       ilab.xpos = c(-13, -11, -9, -7, -5, -3), 
        rows = c(3:20, 25:43),
        ylim = c(-1,47), 
        cex=.75, 
@@ -357,18 +391,18 @@ forest(fit.graph1, xlim=c(-10, 2),
        slab = dat.graph1$cite.fac)
 
 par(cex=.75, font=4)
-text(-10, c(21, 44), pos=4, c('Affective Empathy', 'Cogntive Empathy'))
+text(-16, c(21, 44), pos=4, c('Affective Empathy', 'Cogntive Empathy'))
 
 par(font=4)
-text(-7, 46, 'N')
+text(-13, 46, 'N')
 par(font=2)
-text(c(-6.5, -5.5, -4.5, -3), 46, c('%Female', 'Mean Age', 'CU Respondent', 'Outcome Respondent'))
-text(-10, 46, 'Citation', pos=4)
+text(c(-11, -9, -7, -5, -3), 46, c('%Female', 'Mean Age', 'CU Traits Rater', 'Outcome Rater', 'Sample Type'))
+text(-16, 46, 'Citation', pos=4)
 
 addpoly(fit.emp_aff, row=1.5, cex=.7, mlab = "")
 addpoly(fit.emp_cog, row=23.5, cex=.7, mlab = "")
 
-text(-9, 1.5, 
+text(-15, 1.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -381,7 +415,7 @@ text(-9, 1.5,
              "; ", I^2, " = ",
              .(formatC(fit.emp_aff$I2, digits=1, format="f")), "%)")))
 
-text(-9, 23.5, 
+text(-15, 23.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -399,6 +433,7 @@ dev.off()
 #Fitting two summary graphics (one for affective vs. cognitive) & one for summary vals
 dat.graph2<-dat[dat$Outcome!='empathy_aff',]
 dat.graph2<-dat.graph2[dat.graph2$Outcome!='empathy_cog',]
+dat.graph2$citation[dat.graph2$citation=='Anastassiou-Hadjicharalambous & Warden (2008)']<-'Anastassiou-H. & Warden (2008)'
 
 dat.graph2$cite.fac<-as.factor(dat.graph2$citation)
 fit.graph2<-rma(yi=Eff, vi=Eff_var, data=dat.graph2)
@@ -406,40 +441,40 @@ fit.graph2<-rma(yi=Eff, vi=Eff_var, data=dat.graph2)
 #round down age and % female for purposes of plotting
 dat.graph2$female<-round(dat.graph2$female, digits = 2)
 dat.graph2$age<-round(dat.graph2$age, digits = 2)
-
 par(mar=c(4,4,1,2))
 
 jpeg(paste0(graphics.folder,'Main Effects summary.jpeg'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.75, font=1)
-forest(fit.graph2, xlim=c(-10, 2), 
+forest(fit.graph2, xlim=c(-16, 2), 
        order = order(dat.graph2$Outcome), 
        ilab = cbind(dat.graph2$N, 
                     dat.graph2$female, 
                     dat.graph2$age, 
                     dat.graph2$CU_resp.R, 
-                    dat.graph2$Out_resp.R),
-       ilab.xpos = c(-7, -6.5, -5.5, -4.5, -3), 
-       rows = c(3:27, 32:34, 39:54),
-       ylim = c(-1,58), 
+                    dat.graph2$Out_resp.R, 
+                    dat.graph2$Samp_typ.R),
+       ilab.xpos = c(-13, -11, -9, -7, -5, -3), 
+       rows = c(3:27, 32:34, 39:55),
+       ylim = c(-1,59), 
        cex=.75, 
        xlab="Fisher's z", mlab="", 
        addfit = F,
        slab = dat.graph2$cite.fac)
 
 par(cex=.75, font=4)
-text(-10, c(28, 35, 55), pos=4, c('Total Empathy', 'Guilt', 'Prosociality'))
+text(-16, c(28, 35, 56), pos=4, c('Total Empathy', 'Guilt', 'Prosociality'))
 
 par(font=4)
-text(-7, 57, 'N')
+text(-13, 58, 'N')
 par(font=2)
-text(c(-6.5, -5.5, -4.5, -3), 57, c('%Female', 'Mean Age', 'CU Respondent', 'Outcome Respondent'))
-text(-10, 57, 'Citation', pos=4)
+text(c(-11, -9, -7, -5, -3), 58, c('%Female', 'Mean Age', 'CU Traits Rater', 'Outcome Rater', 'Sample Type'))
+text(-16, 58, 'Citation', pos=4)
 
 addpoly(fit.prosoc, row=1.5, cex=.7, mlab = "")
 addpoly(fit.glt, row=30.5, cex=.7, mlab = "")
 addpoly(fit.prosoc, row=37.5, cex=.7, mlab = "")
 
-text(-9, 1.5, 
+text(-15, 1.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -452,7 +487,7 @@ text(-9, 1.5,
              "; ", I^2, " = ",
              .(formatC(fit.emp_tot$I2, digits=1, format="f")), "%)")))
 
-text(-9, 30.5, 
+text(-15, 30.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -465,7 +500,7 @@ text(-9, 30.5,
              "; ", I^2, " = ",
              .(formatC(fit.glt$I2, digits=1, format="f")), "%)")))
 
-text(-9, 37.5, 
+text(-15, 37.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -498,6 +533,15 @@ fit.emp_tot.mod_female<-rma(yi=Eff,
                          knha=T)
 summary(fit.emp_tot.mod_female)
 
+fit.emp_tot.mod_smpl<-rma(yi=Eff, 
+                            vi=Eff_var, 
+                            mods = ~Samp_typ, 
+                            data=dat.Emp_tot, 
+                            ni=N, 
+                            knha=T)
+summary(fit.emp_tot.mod_smpl)
+
+
 fit.emp_tot.mod_demo<-rma(yi=Eff, 
                             vi=Eff_var, 
                             mods = ~female+age, 
@@ -516,7 +560,7 @@ summary(fit.emp_tot.mod_CU)
 
 fit.emp_tot.mod_CU.all<-rma(yi=Eff, 
                         vi=Eff_var, 
-                        mods = ~female+age+CU_resp, 
+                        mods = ~female+age+Samp_typ+CU_resp, 
                         data=dat.Emp_tot, 
                         ni=N, 
                         knha=T)
@@ -557,6 +601,14 @@ fit.prosoc.mod_female<-rma(yi=Eff,
                             ni=N, 
                             knha=T)
 summary(fit.prosoc.mod_female)
+
+fit.prosoc.mod_smpl<-rma(yi=Eff, 
+                          vi=Eff_var, 
+                          mods = ~Samp_typ, 
+                          data=dat.prosoc, 
+                          ni=N, 
+                          knha=T)
+summary(fit.prosoc.mod_smpl)
 
 fit.prosoc.mod_demo<-rma(yi=Eff, 
                           vi=Eff_var, 
@@ -614,6 +666,14 @@ fit.emp_aff.mod_female<-rma(yi=Eff,
                             ni=N, 
                             knha=T)
 summary(fit.emp_aff.mod_female)
+
+fit.emp_aff.mod_smpl<-rma(yi=Eff, 
+                         vi=Eff_var, 
+                         mods = ~Samp_typ, 
+                         data=dat.Emp_aff, 
+                         ni=N, 
+                         knha=T)
+summary(fit.emp_aff.mod_smpl)
 
 fit.emp_aff.mod_demo<-rma(yi=Eff, 
                           vi=Eff_var, 
@@ -673,6 +733,14 @@ fit.emp_cog.mod_female<-rma(yi=Eff,
                             knha=T)
 summary(fit.emp_cog.mod_female)
 
+fit.emp_cog.mod_smpl<-rma(yi=Eff, 
+                          vi=Eff_var, 
+                          mods = ~Samp_typ, 
+                          data=dat.Emp_cog, 
+                          ni=N, 
+                          knha=T)
+summary(fit.emp_cog.mod_smpl)
+
 fit.emp_cog.mod_demo<-rma(yi=Eff, 
                           vi=Eff_var, 
                           mods = ~female+age, 
@@ -731,6 +799,15 @@ fit.emp_comp.mod_female<-rma(yi=Eff,
                             knha=T)
 summary(fit.emp_comp.mod_female)
 
+fit.emp_comp.mod_smpl<-rma(yi=Eff, 
+                          vi=Eff_var, 
+                          mods = ~Samp_typ, 
+                          data=dat.emp_comp, 
+                          ni=N, 
+                          knha=T)
+summary(fit.emp_comp.mod_smpl)
+
+#Need to go back for this one...
 fit.emp_comp.mod_demo<-rma(yi=Eff, 
                           vi=Eff_var, 
                           mods = ~female+age, 
