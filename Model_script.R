@@ -847,3 +847,6 @@ fit.emp_comp.mod_Out.all<-rma(yi=Eff,
                              ni=N, 
                              knha=T)
 summary(fit.emp_comp.mod_Out.all)
+
+
+#IMPORTANT - NEED TO GO BACK AND ADD IN THE CODING FOR THE MODERATION GRAPHICS... not sure how I overwrote those, but I did. 
