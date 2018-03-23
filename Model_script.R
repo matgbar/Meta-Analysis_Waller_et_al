@@ -11,6 +11,7 @@
 library(metafor)
 library(stargazer)
 library(ggplot2)
+library(ggridges)
 #################################################################################
 #For Windows Laptop
 user<-Sys.getenv('USERPROFILE')
@@ -29,7 +30,7 @@ graphics.folder<-'~/Documents/CU_meta-analysis/Graphics_Folder/'
 #         2. Standardized differences were transformed to r then to Fisher's z
 #         3. Will require all results are exponentiated to return to -1:1 scale 
 #################################################################################
-dat<-read.csv(paste0(data.folder, 'Copy of Meta dataset_2-20-18(1).csv'), stringsAsFactors = F)
+dat<-read.csv(paste0(data.folder, 'Copy of Meta dataset_032318.csv'), stringsAsFactors = F)
 colnames(dat)[1]<-'id'
 colnames(dat)[23]<-'Out_resp'
 
@@ -52,11 +53,6 @@ dat.Emp_aff<-dat[dat$Outcome=='empathy_aff',]
 dat.Emp_cog<-dat[dat$Outcome=='empathy_cog',] 
 dat.glt<-dat[dat$Outcome=='guilt',]   #note probably have too few for guilt
 dat.prosoc<-dat[dat$Outcome=='prosocial',]
-
-#################################################################################
-
-dat$CU_resp.R[dat$citation=='Kimonis et al. (2016)']<-'Other'
-dat$Out_resp.R[dat$citation=='Kimonis et al. (2016)']<-'Other'
 
 #################################################################################
 #Model for Total Empathy: 
@@ -240,17 +236,11 @@ dev.off()
 #Model comparing two forms of empathy - within study differences in effects
 #merging and cleaning data set
 dat.emp_comp<-merge(dat.Emp_aff, dat.Emp_cog, by='id')
-cols<-c(1:5, 12,14,15,22,23,24,39,41,42)
+cols<-c(1:5, 12, 14, 15, 27,28,31, 42, 44, 45)
 dat.emp_comp<-dat.emp_comp[,cols]
 colnames(dat.emp_comp)<-c('id', 'citation', 'female', 'age', 'N', 'R.affective',
                           'Eff_affective', 'Eff_var_affective', 'CU_resp', 'Out_resp',
                           'Sample', 'R_cognitive', 'Eff_cognitive', 'Eff_var_cognitive')
-
-dat.emp_comp$CU_resp.R[dat.emp_comp$CU_resp==0]<-'Self'
-dat.emp_comp$CU_resp.R[dat.emp_comp$CU_resp==1]<-'Other'
-
-dat.emp_comp$Out_resp.R[dat.emp_comp$Out_resp==0]<-'Self'
-dat.emp_comp$Out_resp.R[dat.emp_comp$Out_resp==1]<-'Other'
 
 #Correlations pulled from studies: 
 Aff_cog_cor<-c(.063, .063, .351, 0, 0, .49, 0, .5, 0, .76, .32,0,-.01,.08,0,.45,0,0)
@@ -349,19 +339,25 @@ stargazer(DF.summary, summary = F, out=paste0(model.folder,'Model Summary - no m
           notes = 'LB and UB based on 95% CI')
 
 #Plotting summary effect sizes 
-g1<-ggplot(aes(x=rho, y=Outcome), data=DF.summary)
-g2<-g1+geom_errorbarh(aes(xmin=rho.LB, xmax=rho.UB), height=.25)
-g3<-g2+geom_point(aes(size=N), pch=18)
-g4<-g3+scale_size_continuous(range = c(1,12))
-g5<-g4+xlab(expression(rho))+ylab('')+
-  ggtitle(paste0('Correlation between Outcome Measures and CU Traits'))+
-  theme(plot.title = element_text(hjust=.5))
-g6<-g5+scale_x_continuous(limits = c(-.35, .05))+geom_vline(color='red', lty='dashed',
-                                                          xintercept = 0)
-g6
+Emp_tot.se<-(exp(fit.emp_tot$se)-1)/(exp(fit.emp_tot$se)+1)
+Emp_aff.se<-(exp(fit.emp_aff$se)-1)/(exp(fit.emp_aff$se)+1)
+Emp_cog.se<-(exp(fit.emp_cog$se)-1)/(exp(fit.emp_cog$se)+1)
+Prosoc.se<-(exp(fit.prosoc$se)-1)/(exp(fit.prosoc$se)+1)
+Glt.se<-(exp(fit.glt$se)-1)/(exp(fit.glt$se)+1)
+
+Emp_tot.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Total Empathy'], sd=Emp_tot.se)
+Emp_aff.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Affective Empathy'], sd=Emp_aff.se)
+Emp_cog.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Cognitive Empathy'], sd=Emp_cog.se)
+Prosoc.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Prosociality'], sd=Prosoc.se)
+Glt.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Guilt'], sd=Glt.se)
+
+DF.plot.dist2<-cbind(Emp_tot.dist, Emp_aff.dist, Emp_cog.dist, Prosoc.dist, Glt.dist)
+colnames(DF.plot.dist2)<-c('Total Empathy', 'Affective Empathy', 'Cognitive Empathy', 'Prosociality', 'Guilt')
+
 
 jpeg(paste0(graphics.folder, 'Model Summary Graphic.jpeg'), res=300, units='in', height=7, width=7)
-g6
+mcmc_areas(DF.plot.dist2, prob=.95)+
+  xlab(expression('Population Esimates of'~rho))
 dev.off()
 
 ###########################################################################################
@@ -375,7 +371,7 @@ par(mar=c(4,4,1,2))
 jpeg(paste0(graphics.folder,'Affective vs. Cognitive Empathy.jpeg'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.75, font=1)
 forest(fit.graph1, xlim=c(-16, 2), 
-       order = order(dat.graph1$Outcome), 
+       order = order(dat.graph1$Outcome, dat.graph1$Eff), 
        ilab = cbind(dat.graph1$N, 
                     dat.graph1$female, 
                     dat.graph1$age, 
@@ -446,7 +442,7 @@ par(mar=c(4,4,1,2))
 jpeg(paste0(graphics.folder,'Main Effects summary.jpeg'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.75, font=1)
 forest(fit.graph2, xlim=c(-16, 2), 
-       order = order(dat.graph2$Outcome), 
+       order = order(dat.graph2$Outcome, dat.graph2$Eff), 
        ilab = cbind(dat.graph2$N, 
                     dat.graph2$female, 
                     dat.graph2$age, 
@@ -454,25 +450,25 @@ forest(fit.graph2, xlim=c(-16, 2),
                     dat.graph2$Out_resp.R, 
                     dat.graph2$Samp_typ.R),
        ilab.xpos = c(-13, -11, -9, -7, -5, -3), 
-       rows = c(3:27, 32:34, 39:55),
-       ylim = c(-1,59), 
+       rows = c(3:29, 34:36, 41:57),
+       ylim = c(-1,61), 
        cex=.75, 
        xlab="Fisher's z", mlab="", 
        addfit = F,
        slab = dat.graph2$cite.fac)
 
 par(cex=.75, font=4)
-text(-16, c(28, 35, 56), pos=4, c('Total Empathy', 'Guilt', 'Prosociality'))
+text(-16, c(30, 37, 58), pos=4, c('Total Empathy', 'Guilt', 'Prosociality'))
 
 par(font=4)
-text(-13, 58, 'N')
+text(-13, 60, 'N')
 par(font=2)
-text(c(-11, -9, -7, -5, -3), 58, c('%Female', 'Mean Age', 'CU Traits Rater', 'Outcome Rater', 'Sample Type'))
-text(-16, 58, 'Citation', pos=4)
+text(c(-11, -9, -7, -5, -3), 60, c('%Female', 'Mean Age', 'CU Traits Rater', 'Outcome Rater', 'Sample Type'))
+text(-16, 60, 'Citation', pos=4)
 
-addpoly(fit.prosoc, row=1.5, cex=.7, mlab = "")
-addpoly(fit.glt, row=30.5, cex=.7, mlab = "")
-addpoly(fit.prosoc, row=37.5, cex=.7, mlab = "")
+addpoly(fit.emp_tot, row=1.5, cex=.7, mlab = "")
+addpoly(fit.glt, row=32.5, cex=.7, mlab = "")
+addpoly(fit.prosoc, row=39.5, cex=.7, mlab = "")
 
 text(-15, 1.5, 
      pos=4, 
@@ -487,7 +483,7 @@ text(-15, 1.5,
              "; ", I^2, " = ",
              .(formatC(fit.emp_tot$I2, digits=1, format="f")), "%)")))
 
-text(-15, 30.5, 
+text(-15, 32.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -500,7 +496,7 @@ text(-15, 30.5,
              "; ", I^2, " = ",
              .(formatC(fit.glt$I2, digits=1, format="f")), "%)")))
 
-text(-15, 37.5, 
+text(-15, 39.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -541,15 +537,6 @@ fit.emp_tot.mod_smpl<-rma(yi=Eff,
                             knha=T)
 summary(fit.emp_tot.mod_smpl)
 
-
-fit.emp_tot.mod_demo<-rma(yi=Eff, 
-                            vi=Eff_var, 
-                            mods = ~female+age, 
-                            data=dat.Emp_tot, 
-                            ni=N, 
-                            knha=T)
-summary(fit.emp_tot.mod_demo)
-
 fit.emp_tot.mod_CU<-rma(yi=Eff, 
                         vi=Eff_var, 
                         mods = ~CU_resp, 
@@ -558,14 +545,6 @@ fit.emp_tot.mod_CU<-rma(yi=Eff,
                         knha=T)
 summary(fit.emp_tot.mod_CU)
 
-fit.emp_tot.mod_CU.all<-rma(yi=Eff, 
-                        vi=Eff_var, 
-                        mods = ~female+age+Samp_typ+CU_resp, 
-                        data=dat.Emp_tot, 
-                        ni=N, 
-                        knha=T)
-summary(fit.emp_tot.mod_CU.all)
-
 fit.emp_tot.mod_Out<-rma(yi=Eff, 
                          vi=Eff_var, 
                          mods = ~Out_resp, 
@@ -573,14 +552,6 @@ fit.emp_tot.mod_Out<-rma(yi=Eff,
                          ni=N, 
                          knha=T)
 summary(fit.emp_tot.mod_Out)
-
-fit.emp_tot.mod_Out.all<-rma(yi=Eff, 
-                         vi=Eff_var, 
-                         mods = ~female+age+Out_resp, 
-                         data=dat.Emp_tot, 
-                         ni=N, 
-                         knha=T)
-summary(fit.emp_tot.mod_Out.all)
 
 #None of the moderators were significant predictors... 
 
@@ -592,7 +563,24 @@ fit.prosoc.mod_age<-rma(yi=Eff,
                          data=dat.prosoc, 
                          ni=N, 
                          knha=T)
-summary(fit.prosoc.mod_age)
+summary(fit.prosoc.mod_age)#Significant: 
+#Exploring moderation graphically. 
+age<-seq(3, 18, by=.05)
+prosoc.age.pred<-predict(fit.prosoc.mod_age, newmods = age, level = 95)
+prosoc.age.pred.DF<-data.frame(Age=age, Pred_vals=prosoc.age.pred$pred, CI_UB=prosoc.age.pred$ci.ub, CI_LB=prosoc.age.pred$ci.lb)
+
+g1<-ggplot()+
+  geom_line(data=prosoc.age.pred.DF, aes(x=Age, y=Pred_vals),color="#03396c")+
+  geom_ribbon(data=prosoc.age.pred.DF, aes(x=Age,ymin=CI_LB, ymax=CI_UB), alpha=.50, color="#03396c", fill="#d1e1ec")+
+  geom_point(data=dat.prosoc, aes(x=age, y=Eff))+
+  geom_errorbar(data=dat.prosoc, aes(x=age, ymin=Eff-sqrt(Eff_var), ymax=Eff+sqrt(Eff_var)))+
+  ylab("Effect Size (Fisher's z)")+
+  xlab("Mean Age (yrs)")+
+  geom_hline(yintercept = 0, lty='dashed')
+
+jpeg(paste0(graphics.folder, 'Prosoc_Moderated_by_Age.jpeg'), res=300, units='in', height = 8, width = 8)
+g1
+dev.off()
 
 fit.prosoc.mod_female<-rma(yi=Eff, 
                             vi=Eff_var, 
@@ -610,29 +598,33 @@ fit.prosoc.mod_smpl<-rma(yi=Eff,
                           knha=T)
 summary(fit.prosoc.mod_smpl)
 
-fit.prosoc.mod_demo<-rma(yi=Eff, 
-                          vi=Eff_var, 
-                          mods = ~female+age, 
-                          data=dat.prosoc, 
-                          ni=N, 
-                          knha=T)
-summary(fit.prosoc.mod_demo)
-
 fit.prosoc.mod_CU<-rma(yi=Eff, 
                         vi=Eff_var, 
                         mods = ~CU_resp, 
                         data=dat.prosoc, 
                         ni=N, 
                         knha=T)
-summary(fit.prosoc.mod_CU)
+summary(fit.prosoc.mod_CU)#Significant (also collinear with outcome rater - only need one model)
 
-fit.prosoc.mod_CU.all<-rma(yi=Eff, 
-                            vi=Eff_var, 
-                            mods = ~female+age+CU_resp, 
-                            data=dat.prosoc, 
-                            ni=N, 
-                            knha=T)
-summary(fit.prosoc.mod_CU.all)
+CU_resp<-c(0,1)
+prosoc.CU.pred<-predict(fit.prosoc.mod_CU, newmods = CU_resp, level = 95)
+
+CU_self<-prosoc.CU.pred$pred[1]
+CU_self.se<-prosoc.CU.pred$se[1]
+
+CU_other<-prosoc.CU.pred$pred[2]
+CU_other.se<-prosoc.CU.pred$se[2]
+
+CU_self.dist<-rnorm(100000, mean=CU_self, sd=CU_self.se)
+CU_other.dist<-rnorm(100000, mean=CU_other, sd=CU_other.se)
+
+prosoc.CU.pred.DF<-cbind(CU_self.dist, CU_other.dist)
+colnames(prosoc.CU.pred.DF)<-c('Respondent: Self', 'Respondent: Other')
+
+jpeg(paste0(graphics.folder, 'Prosoc_Moderated_by_Resp.jpeg'), res=300, units='in', height=8, width=8)
+mcmc_areas(prosoc.CU.pred.DF, prob = .95)+
+  xlab("Effect Size (Fisher's z)")
+dev.off()
 
 fit.prosoc.mod_Out<-rma(yi=Eff, 
                          vi=Eff_var, 
@@ -642,13 +634,6 @@ fit.prosoc.mod_Out<-rma(yi=Eff,
                          knha=T)
 summary(fit.prosoc.mod_Out)
 
-fit.prosoc.mod_Out.all<-rma(yi=Eff, 
-                             vi=Eff_var, 
-                             mods = ~female+age+Out_resp, 
-                             data=dat.prosoc, 
-                             ni=N, 
-                             knha=T)
-summary(fit.prosoc.mod_Out.all)
 #------------------------------------------------------------------------------------------
 #Affective Empathy Model:
 fit.emp_aff.mod_age<-rma(yi=Eff, 
@@ -675,14 +660,6 @@ fit.emp_aff.mod_smpl<-rma(yi=Eff,
                          knha=T)
 summary(fit.emp_aff.mod_smpl)
 
-fit.emp_aff.mod_demo<-rma(yi=Eff, 
-                          vi=Eff_var, 
-                          mods = ~female+age, 
-                          data=dat.Emp_aff, 
-                          ni=N, 
-                          knha=T)
-summary(fit.emp_aff.mod_demo)
-
 fit.emp_aff.mod_CU<-rma(yi=Eff, 
                         vi=Eff_var, 
                         mods = ~CU_resp, 
@@ -691,14 +668,6 @@ fit.emp_aff.mod_CU<-rma(yi=Eff,
                         knha=T)
 summary(fit.emp_aff.mod_CU)
 
-fit.emp_aff.mod_CU.all<-rma(yi=Eff, 
-                            vi=Eff_var, 
-                            mods = ~female+age+CU_resp, 
-                            data=dat.Emp_aff, 
-                            ni=N, 
-                            knha=T)
-summary(fit.emp_aff.mod_CU.all)
-
 fit.emp_aff.mod_Out<-rma(yi=Eff, 
                          vi=Eff_var, 
                          mods = ~Out_resp, 
@@ -706,14 +675,6 @@ fit.emp_aff.mod_Out<-rma(yi=Eff,
                          ni=N, 
                          knha=T)
 summary(fit.emp_aff.mod_Out)
-
-fit.emp_aff.mod_Out.all<-rma(yi=Eff, 
-                             vi=Eff_var, 
-                             mods = ~female+age+Out_resp, 
-                             data=dat.Emp_aff, 
-                             ni=N, 
-                             knha=T)
-summary(fit.emp_aff.mod_Out.all)
 
 #------------------------------------------------------------------------------------------
 #Cognitive Empathy Model:
@@ -741,14 +702,6 @@ fit.emp_cog.mod_smpl<-rma(yi=Eff,
                           knha=T)
 summary(fit.emp_cog.mod_smpl)
 
-fit.emp_cog.mod_demo<-rma(yi=Eff, 
-                          vi=Eff_var, 
-                          mods = ~female+age, 
-                          data=dat.Emp_cog, 
-                          ni=N, 
-                          knha=T)
-summary(fit.emp_cog.mod_demo)
-
 fit.emp_cog.mod_CU<-rma(yi=Eff, 
                         vi=Eff_var, 
                         mods = ~CU_resp, 
@@ -757,30 +710,33 @@ fit.emp_cog.mod_CU<-rma(yi=Eff,
                         knha=T)
 summary(fit.emp_cog.mod_CU)
 
-fit.emp_cog.mod_CU.all<-rma(yi=Eff, 
-                            vi=Eff_var, 
-                            mods = ~female+age+CU_resp, 
-                            data=dat.Emp_cog, 
-                            ni=N, 
-                            knha=T)
-summary(fit.emp_cog.mod_CU.all)
-
 fit.emp_cog.mod_Out<-rma(yi=Eff, 
                          vi=Eff_var, 
                          mods = ~Out_resp, 
                          data=dat.Emp_cog, 
                          ni=N, 
                          knha=T)
-summary(fit.emp_cog.mod_Out)
+summary(fit.emp_cog.mod_Out)#Significant
 
-fit.emp_cog.mod_Out.all<-rma(yi=Eff, 
-                             vi=Eff_var, 
-                             mods = ~female+age+Out_resp, 
-                             data=dat.Emp_cog, 
-                             ni=N, 
-                             knha=T)
-summary(fit.emp_cog.mod_Out.all)
+Out_resp<-c(0,1)
+emp_cog.Out.pred<-predict(fit.emp_cog.mod_Out, newmods = Out_resp, level = 95)
 
+Out_self<-emp_cog.Out.pred$pred[1]
+Out_self.se<-emp_cog.Out.pred$se[1]
+
+Out_other<-emp_cog.Out.pred$pred[2]
+Out_other.se<-emp_cog.Out.pred$se[2]
+
+Out_self.dist<-rnorm(100000, mean=Out_self, sd=Out_self.se)
+Out_other.dist<-rnorm(100000, mean=Out_other, sd=Out_other.se)
+
+emp_cog.Out.pred.DF<-cbind(Out_self.dist, Out_other.dist)
+colnames(emp_cog.Out.pred.DF)<-c('Respondent: Self', 'Respondent: Other')
+
+jpeg(paste0(graphics.folder, 'CogEmp_Moderated_by_OutResp.jpeg'), res=300, units='in', height=8, width=8)
+mcmc_areas(emp_cog.Out.pred.DF, prob = .95)+
+  xlab("Effect Size (Fisher's z)")
+dev.off()
 #------------------------------------------------------------------------------------------
 #Empathy Difference Model:
 fit.emp_comp.mod_age<-rma(yi=Eff, 
@@ -801,20 +757,11 @@ summary(fit.emp_comp.mod_female)
 
 fit.emp_comp.mod_smpl<-rma(yi=Eff, 
                           vi=Eff_var, 
-                          mods = ~Samp_typ, 
+                          mods = ~Sample, 
                           data=dat.emp_comp, 
                           ni=N, 
                           knha=T)
 summary(fit.emp_comp.mod_smpl)
-
-#Need to go back for this one...
-fit.emp_comp.mod_demo<-rma(yi=Eff, 
-                          vi=Eff_var, 
-                          mods = ~female+age, 
-                          data=dat.emp_comp, 
-                          ni=N, 
-                          knha=T)
-summary(fit.emp_comp.mod_demo)
 
 fit.emp_comp.mod_CU<-rma(yi=Eff, 
                         vi=Eff_var, 
@@ -824,14 +771,6 @@ fit.emp_comp.mod_CU<-rma(yi=Eff,
                         knha=T)
 summary(fit.emp_comp.mod_CU)
 
-fit.emp_comp.mod_CU.all<-rma(yi=Eff, 
-                            vi=Eff_var, 
-                            mods = ~female+age+CU_resp, 
-                            data=dat.emp_comp, 
-                            ni=N, 
-                            knha=T)
-summary(fit.emp_comp.mod_CU.all)
-
 fit.emp_comp.mod_Out<-rma(yi=Eff, 
                          vi=Eff_var, 
                          mods = ~Out_resp, 
@@ -839,14 +778,3 @@ fit.emp_comp.mod_Out<-rma(yi=Eff,
                          ni=N, 
                          knha=T)
 summary(fit.emp_comp.mod_Out)
-
-fit.emp_comp.mod_Out.all<-rma(yi=Eff, 
-                             vi=Eff_var, 
-                             mods = ~female+age+Out_resp, 
-                             data=dat.emp_comp, 
-                             ni=N, 
-                             knha=T)
-summary(fit.emp_comp.mod_Out.all)
-
-
-#IMPORTANT - NEED TO GO BACK AND ADD IN THE CODING FOR THE MODERATION GRAPHICS... not sure how I overwrote those, but I did. 
