@@ -1,0 +1,51 @@
+ID_temp,citation,Country,N,Age Category,age,female,Samp_typ,Measure of CU Traits,ICU,CU_resp,Measure of Empathy,Measure of Prosociality ,Measure of Guilt,Out_Respondent (0=child; 1=parent; 2=teacher)
+1,Meehan et al. (2017),England,6791,,13,51.11,0,interpersonal callousness measure (correlated with APSD),0,1,,SDQ ,,1
+2,Dadds et al. (2009),Australia,1393,,7.79,0,0,"APSD, SDQ",0,1,GEM,,,1
+3,Dadds et al. (2009),Australia,1367,,7.79,100,0,"APSD, SDQ",0,1,GEM,,,1
+4,Willoughby et al. (2015),USA,1078,,7.3,50,0,ICU,1,1,,SDQ,,1
+5,Chabrol et al. (2011),France,972,,16.7,39,0,YPI,0,0,IRI,,,0
+6,Whitt & Howard (2013),USA,707,,15.5,13.01272984,1,APSD,0,0,PPI-SV,,,0
+7,Viding et al. (2009),England,704,,12,47,0,ICU,1,0,,SDQ,,0
+8,Ciucci & Baroncelli (2014),Italy,529,,12.7,53.3,0,ICU,1,0,HIFDS,,,0
+9,Roose et al. (2010),Belgium,455,,16.6,44,0,ICU,1,1,IRI,,,0
+10,Pechorro et al. (2016),Portugal,438,,17.5,0,0,"YPI, ICU, APSD-SR",0,0,BES,,,0
+11,Pechorro et al. (2017),Portugal,377,,16.23,100,0,"YPI, ICU, APSD",0,0,BES,,,0
+12,Vahl et al. (2014),Netherlands,365,,16.5,0,1,YPI-S,0,0,YPI-S,SDQ,,0
+13,Lopez-Romero et al. (2015a),Spain,324,,16.13,27.5,1,"ICU, APSD",0,0,BES,10 items created ad hoc for the study,,0
+14,Crapanzano et al. (2011),USA,284,,11.28,54.2,0,APSD,0,0,,CSBS,,0
+15,Wendt et al. (2017),England,249,,10,53,0,APSD,0,0,,SDQ,,0
+16,Kimonis et al. (2008),USA,248,,15.47,24.2,1,ICU,1,0,EQI,,,0
+17,Waller et al. (2015),USA,240,,3.416666667,49.16,0,CBCL,0,1,"""My Child"" Questionnaire",,,1
+18,Pechorro et al. (2015),Portugal,221,,16.75,0,0,"APSD-SR, ICU",0,0,BES,,,0
+19,Kimonis et al. (2016),USA,214,,4.7,46.7,0,ICU,1,1,EQI,,,1
+20,Andrade & Wade (2016),Canada,208,,8.8,21.6,1,3 items from ICU,0,1,,SDQ,,1
+21,Munoz et al. (2011),England,201,,11.5,50,0,ICU,1,0,BES,,,0
+22,Dadds et al. (2012),Australia,195,,10.52,24.4,1,APSD and SDQ,0,1,GEM,SDQ,,1
+23,Pardini et al. (2003),Portugal,169,,15.8,42.6,1,APSD-SR,0,0,,SDQ-SR,,0
+24,Pechorro et al. (2015),Portugal,160,,16.01,0,0,APSD-SR,0,0,,SDQ-SR,,0
+25,Hawes et al. (2014),USA,150,,8.99,0,1,ICU,1,1,,SCS,,1
+26,Stickle et al. (2012),USA,150,,15.2,40,1,ICU,1,1,IRI,,,1
+27,Antoniadou et al. (2016),Greece,146,,14.5,43,0,YPI,0,0,BES,,,0
+28,Pasalich et al. (2014),Australia,134,,5.6,21,1,APSD and SDQ,0,1,GEM,,,1
+29,O'Kearney et al. (2017),Australia,47,,5.8,0,0,ICU,1,1,GEM,SDQ,,1
+30,Dolan & Rennie (2007),England,115,,16.2,0,1,YPI,0,0,IVE,,,0
+31,Malcolm-Smith et al. (2015),South Africa,114,,6.58,36.8,0,CUSD (APSD and SDQ),0,1,GEM and three performance-based tasks,,,1
+32,Kahn et al. (2017),USA,112,,15.5,0,0,ICU,1,0,BES,,,0
+33,Lui et al. (2016),USA,103,,16.9,32,1,ICU,1,0,GEM,,,0
+34,van Vugt et al. (2012),Netherlands,85,,17.54,0,1,APSD and ICU,0,0,BES,,,0
+35,Hogstrom et al. (2013),Sweden,57,,6.65,45.6,0,APSD,0,1,,SDQ,,1
+36,Hawes & Dadds (2007),Australia,56,,6.29,0,1,APSD and SDQ,0,1,,SDQ,,1
+37,Flight & Forth (2007),Canada,51,,17.1,0,0,PCL:YC ,0,0,IRI,,,0
+38,Lotze et al. (2010),USA,50,,9.8,62,0,APSD,0,0,,,TOSCA-C,0
+39,Pijper et al. (2016),Netherlands,49,,10.28,0,1,APSD,0,1,IECA and BES,,,0
+40,Holmqvist (2008),Sweden,47,,17,0,1,PCL:SV,0,1,EI,,,0
+41,Pechorro et al. (2013),Portugal,44,,15.75,100,1,APSD-SR,0,0,,SDQ,,0
+42,Martin-Key et al. (2017),UK,37,,16.03162162,0,1,ICU,1,0,IRI,,,0
+43,Dadds et al. (2012),Australia,24,,6,50.5,1,APSD and SDQ,0,1,GEM,,,1
+44,Dadds et al. (2014),England,55,,5.501348485,45.44181818,1,APSD and SDQ,0,1,,SDQ,,1
+45,Anastassiou-Hadjicharalambous & Warden (2008),Scotland,66,,9.355,4.55,1,APSD,0,1,Bryant Empathy Index,,,0
+46,Gostisha et al. (2014),USA,50,,16.09,0,1,"ICU, IRI, PCL-YV",0,0,IRI,,,0
+47,Lopez-Romero et al. (2015b),Spain,192,,8.05,27.6,0,ICU,1,1,Empathy Scale for Children (short version),,,0
+48,Brouns et al. (2013),Netherlands,0,,16.61,0,0,APSD,0,1,IRI,,,0
+49,Brouns et al. (2013),Netherlands,0,,16.77,100,0,APSD,0,1,IRI,,,0
+50,Andrade et al. (2015),Canada,166,,8.64,87.46987952,1,3-item measure from ICU,0,1,,SDQ,,1
