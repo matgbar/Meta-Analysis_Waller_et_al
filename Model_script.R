@@ -30,7 +30,7 @@ graphics.folder<-'~/Documents/CU_meta-analysis/Graphics_Folder/'
 #         2. Standardized differences were transformed to r then to Fisher's z
 #         3. Will require all results are exponentiated to return to -1:1 scale 
 #################################################################################
-dat<-read.csv(paste0(data.folder, 'Copy of Meta dataset_032318.csv'), stringsAsFactors = F)
+dat<-read.csv(paste0(data.folder, 'Copy of Meta dataset_041018.csv'), stringsAsFactors = F)
 colnames(dat)[1]<-'id'
 colnames(dat)[23]<-'Out_resp'
 
@@ -45,8 +45,8 @@ dat$Same_diff[dat$CU_resp.R!=dat$Out_resp.R]<-1
 dat$Same_diff.R[dat$Same_diff==0]<-'Same'
 dat$Same_diff.R[dat$Same_diff==1]<-'Different'
 
-dat$Samp_typ.R[dat$Samp_typ==1]<-'Referred'
-dat$Samp_typ.R[dat$Samp_typ==0]<-'Community'
+dat$Samp_typ.R[dat$Samp_typ==1]<-'Referred/Clinical'
+dat$Samp_typ.R[dat$Samp_typ==0]<-'Community/Non-clincal'
 
 dat.Emp_tot<-dat[dat$Outcome=='empathy_tot',]
 dat.Emp_aff<-dat[dat$Outcome=='empathy_aff',]
@@ -243,7 +243,7 @@ colnames(dat.emp_comp)<-c('id', 'citation', 'female', 'age', 'N', 'R.affective',
                           'Sample', 'R_cognitive', 'Eff_cognitive', 'Eff_var_cognitive')
 
 #Correlations pulled from studies: 
-Aff_cog_cor<-c(.063, .063, .351, 0, 0, .49, 0, .5, 0, .76, .32,0,-.01,.08,0,.45,0,0)
+Aff_cog_cor<-c(.063, .063, .35, 0, 0, .49, 0, .5, 0, .76, .32, 0, -.01, .08,0,.45,0,0)
 
 #Calculating difference in effects and variance terms adjusted for outcome correlation
 Eff<-dat.emp_comp$Eff_affective-dat.emp_comp$Eff_cognitive
@@ -354,6 +354,7 @@ Glt.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Guilt'], sd=Glt
 DF.plot.dist2<-cbind(Emp_tot.dist, Emp_aff.dist, Emp_cog.dist, Prosoc.dist, Glt.dist)
 colnames(DF.plot.dist2)<-c('Total Empathy', 'Affective Empathy', 'Cognitive Empathy', 'Prosociality', 'Guilt')
 
+library(bayesplot)
 
 jpeg(paste0(graphics.folder, 'Model Summary Graphic.jpeg'), res=300, units='in', height=7, width=7)
 mcmc_areas(DF.plot.dist2, prob=.95)+
@@ -450,21 +451,21 @@ forest(fit.graph2, xlim=c(-16, 2),
                     dat.graph2$Out_resp.R, 
                     dat.graph2$Samp_typ.R),
        ilab.xpos = c(-13, -11, -9, -7, -5, -3), 
-       rows = c(3:29, 34:36, 41:57),
-       ylim = c(-1,61), 
+       rows = c(3:29, 34:36, 41:59),
+       ylim = c(-1,63), 
        cex=.75, 
        xlab="Fisher's z", mlab="", 
        addfit = F,
        slab = dat.graph2$cite.fac)
 
 par(cex=.75, font=4)
-text(-16, c(30, 37, 58), pos=4, c('Total Empathy', 'Guilt', 'Prosociality'))
+text(-16, c(30, 37, 60), pos=4, c('Total Empathy', 'Guilt', 'Prosociality'))
 
 par(font=4)
-text(-13, 60, 'N')
+text(-13, 62, 'N')
 par(font=2)
-text(c(-11, -9, -7, -5, -3), 60, c('%Female', 'Mean Age', 'CU Traits Rater', 'Outcome Rater', 'Sample Type'))
-text(-16, 60, 'Citation', pos=4)
+text(c(-11, -9, -7, -5, -3), 62, c('%Female', 'Mean Age', 'CU Traits Rater', 'Outcome Rater', 'Sample Type'))
+text(-16, 62, 'Citation', pos=4)
 
 addpoly(fit.emp_tot, row=1.5, cex=.7, mlab = "")
 addpoly(fit.glt, row=32.5, cex=.7, mlab = "")
@@ -771,6 +772,28 @@ fit.emp_comp.mod_CU<-rma(yi=Eff,
                         knha=T)
 summary(fit.emp_comp.mod_CU)
 
+#Exploring marginally significant distributions. 
+CU_resp<-c(0,1)
+emp_comp.CU.pred<-predict(fit.emp_comp.mod_CU, newmods = CU_resp, level = 95)
+
+CU_self<-emp_comp.CU.pred$pred[1]
+CU_self.se<-emp_comp.CU.pred$se[1]
+
+CU_other<-emp_comp.CU.pred$pred[2]
+CU_other.se<-emp_comp.CU.pred$se[2]
+
+CU_self.dist<-rnorm(100000, mean=CU_self, sd=CU_self.se)
+CU_other.dist<-rnorm(100000, mean=CU_other, sd=CU_other.se)
+
+emp_comp.CU.pred.DF<-cbind(CU_self.dist, CU_other.dist)
+colnames(emp_comp.CU.pred.DF)<-c('Respondent: Other', 'Respondent: Self')
+
+jpeg(paste0(graphics.folder, 'CompEmp_Moderated_by_CUResp.jpeg'), res=300, units='in', height=8, width=8)
+mcmc_areas(emp_comp.CU.pred.DF, prob = .95)+
+  xlab("Effect Size (Fisher's z)")
+dev.off()
+
+
 fit.emp_comp.mod_Out<-rma(yi=Eff, 
                          vi=Eff_var, 
                          mods = ~Out_resp, 
@@ -778,3 +801,78 @@ fit.emp_comp.mod_Out<-rma(yi=Eff,
                          ni=N, 
                          knha=T)
 summary(fit.emp_comp.mod_Out)
+
+###########################################################################################################
+#Testing whether ICU mesure used is a moderator... 
+dat.icu<-read.csv(paste0(data.folder, 'descriptive table.csv'))
+colnames(dat.icu)[1]<-'id'
+
+##
+dat.Emp_tot<-merge(dat.Emp_tot, dat.icu[,c(1,10)], by='id')
+fit.emp_tot.mod_icu<-rma(yi=Eff, 
+                         vi=Eff_var, 
+                         mods = ~ICU, 
+                         data=dat.Emp_tot, 
+                         ni=N, 
+                         knha=T)
+summary(fit.emp_tot.mod_icu)
+
+##
+dat.Emp_aff<-merge(dat.Emp_aff, dat.icu[,c(1,10)], by='id')
+fit.emp_aff.mod_icu<-rma(yi=Eff, 
+                         vi=Eff_var, 
+                         mods = ~ICU, 
+                         data=dat.Emp_aff, 
+                         ni=N, 
+                         knha=T)
+summary(fit.emp_aff.mod_icu)
+
+##
+dat.Emp_cog<-merge(dat.Emp_cog, dat.icu[,c(1,10)], by='id')
+fit.emp_cog.mod_icu<-rma(yi=Eff, 
+                         vi=Eff_var, 
+                         mods = ~ICU, 
+                         data=dat.Emp_cog, 
+                         ni=N, 
+                         knha=T)
+summary(fit.emp_cog.mod_icu)
+
+##
+dat.prosoc<-merge(dat.prosoc, dat.icu[,c(1,10)], by='id')
+fit.prosoc.mod_icu<-rma(yi=Eff, 
+                         vi=Eff_var, 
+                         mods = ~ICU, 
+                         data=dat.prosoc, 
+                         ni=N, 
+                         knha=T)
+summary(fit.prosoc.mod_icu)
+
+##
+dat.emp_comp<-merge(dat.emp_comp, dat.icu[,c(1,10)], by='id')
+fit.emp_comp.mod_icu<-rma(yi=Eff, 
+                         vi=Eff_var, 
+                         mods = ~ICU, 
+                         data=dat.emp_comp, 
+                         ni=N, 
+                         knha=T)
+summary(fit.emp_comp.mod_icu)
+
+#############################################################################################################################
+length(unique(dat$citation))#48 studies
+
+library(dplyr)
+#Total unique N included
+temp.df.N <- dat %>% 
+  distinct(citation, N) %>% 
+  select(N)
+sum(temp.df.N$N)
+
+temp.df.age <- dat %>% 
+  distinct(citation, age, N)
+
+sum(temp.df.age$age*temp.df.age$N)/sum(temp.df.age$N)
+
+temp.df.female <- dat %>% 
+  distinct(citation, female, N)
+
+sum(temp.df.female$female*temp.df.female$N)/sum(temp.df.female$N)/100
