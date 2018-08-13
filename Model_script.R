@@ -12,7 +12,7 @@ library(metafor)
 library(stargazer)
 library(ggplot2)
 library(ggridges)
-library(mitml)
+library(mice)
 #################################################################################
 #For Windows Laptop
 user<-Sys.getenv('USERPROFILE')
@@ -57,6 +57,8 @@ dat$Emp_cog<-ifelse(dat$Outcome=='empathy_cog', 1, 0)
 dat$prosocial<-ifelse(dat$Outcome=='prosocial', 1, 0)
 dat$guilt<-ifelse(dat$Outcome=='guilt', 1, 0)
 
+dat$R_var<-((1-dat$R^2)^2)/(dat$N-1)
+
 #selecting total empathy as reference value - largest N
 dat.imp<-dat[c('id', 
                'female', 
@@ -66,8 +68,8 @@ dat.imp<-dat[c('id',
                'Emp_cog', 
                'prosocial',
                'guilt',
-               'Eff', 
-               'Eff_var', 
+               'R', 
+               'R_var', 
                'CU_resp', 
                'Out_resp', 
                'Samp_typ', 
@@ -75,50 +77,82 @@ dat.imp<-dat[c('id',
                'Out_Rel')]
 
 #Imputation Model
-fml<-CU_Rel+Out_Rel+female+age+N+
-  Emp_aff+Emp_cog+prosocial+guilt+Eff+Eff_var+CU_resp+Out_resp+Samp_typ~1+(1|id)
+imp<-mice(dat.imp, maxit=100, m=5)
 
-imp<-panImpute(dat.imp, 
-               formula = fml, 
-               n.burn = 100000, 
-               n.iter = 100, 
-               m = 50
-               )
+png(paste0(graphics.folder, 'MICE_Imputation_convergence.png'), 
+    res=300, 
+    units='in', 
+    height = 4, 
+    width = 6)
+plot(imp)
+dev.off()
 
-summary(imp)
-plot(imp, trace = 'all', print='beta', pos=c(1,4))
-
-str(dat.imp)
+#Extracting and obtaining estimates for missing values (averaging across the 20 imputed datasets)
+dat.imp<-complete(imp)
+dat.imp$citation<-dat$citation
 
 #some cleanup and recoding
-dat$CU_resp.R[dat$CU_resp==0]<-'Self'
-dat$CU_resp.R[dat$CU_resp==1]<-'Other'
-dat$Out_resp.R[dat$Out_resp==0]<-'Self'
-dat$Out_resp.R[dat$Out_resp==1]<-'Other'
-dat$Same_diff[dat$CU_resp.R==dat$Out_resp.R]<-0
-dat$Same_diff[dat$CU_resp.R!=dat$Out_resp.R]<-1
+dat.imp$CU_resp.R[dat.imp$CU_resp==0]<-'Self'
+dat.imp$CU_resp.R[dat.imp$CU_resp==1]<-'Other'
+dat.imp$Out_resp.R[dat.imp$Out_resp==0]<-'Self'
+dat.imp$Out_resp.R[dat.imp$Out_resp==1]<-'Other'
+dat.imp$Same_diff[dat.imp$CU_resp.R==dat.imp$Out_resp.R]<-0
+dat.imp$Same_diff[dat.imp$CU_resp.R!=dat.imp$Out_resp.R]<-1
 
-dat$Same_diff.R[dat$Same_diff==0]<-'Same'
-dat$Same_diff.R[dat$Same_diff==1]<-'Different'
+dat.imp$Same_diff.R[dat.imp$Same_diff==0]<-'Same'
+dat.imp$Same_diff.R[dat.imp$Same_diff==1]<-'Different'
 
-dat$Samp_typ.R[dat$Samp_typ==1]<-'Referred/Clinical'
-dat$Samp_typ.R[dat$Samp_typ==0]<-'Community/Non-clincal'
+dat.imp$Samp_typ.R[dat.imp$Samp_typ==1]<-'Referred/Clinical'
+dat.imp$Samp_typ.R[dat.imp$Samp_typ==0]<-'Community/Non-clincal'
 
-dat.Emp_tot<-dat[dat$Outcome=='empathy_tot',]
-dat.Emp_aff<-dat[dat$Outcome=='empathy_aff',]
-dat.Emp_cog<-dat[dat$Outcome=='empathy_cog',] 
-dat.glt<-dat[dat$Outcome=='guilt',]   #note probably have too few for guilt
-dat.prosoc<-dat[dat$Outcome=='prosocial',]
+#Creating Attenuation-corrected values
+dat.imp$Eff<-dat.imp$R/sqrt(dat.imp$CU_Rel*dat.imp$Out_Rel)
+
+#There are some values that exceed -1 threshold. 
+#For now randomly selecting betwen -.9 and -.999 
+#Better alternatives may exist
+#3/4 of effects with issues involved small samples, smallish reliabilities, and d's instead of r's
+#(note the d's were converted to r's)
+
+dat.imp$Eff.r<-ifelse(dat.imp$Eff<=-1, 
+                      runif(n=1, max = -.9, min=-.99),
+                      dat.imp$Eff)
+dat.imp$Eff_var<-dat.imp$R_var/sqrt(dat.imp$CU_Rel*dat.imp$Out_Rel)
+
+#This is the new analytic data set
+sink(paste0(model.folder, 'Imputed_Descriptives.txt'))
+psych::describe(dat.imp)
+sink()
+
+dat.Emp_tot<-dat.imp[rowSums(dat.imp[c('Emp_aff',
+                                       'Emp_cog', 
+                                       'guilt', 
+                                       'prosocial')]
+                             )==0,]
+dat.Emp_aff<-dat[dat.imp$Emp_aff==1,]
+dat.Emp_cog<-dat[dat.imp$Emp_cog==1,] 
+dat.glt<-dat[dat.imp$guilt==1,]   #note probably have too few for guilt
+dat.prosoc<-dat[dat$prosocial==1,]
 
 #################################################################################
-
+#Applying Attenuation Correction to Effects and Variances - based on JH's reccomendations
+#Removing antiquated use of fail-safe N 
+#Using metafor to achieve Hunter-Schmidt approach: 
+#see: http://www.metafor-project.org/doku.php/tips:hunter_schmidt_method
+#################################################################################
 
 #################################################################################
 #Model for Total Empathy: 
-fit.emp_tot<-rma(yi=Eff, vi=Eff_var, data=dat.Emp_tot, ni=N)
+fit.emp_tot<-rma(yi=Eff.r, 
+                 vi=Eff_var, 
+                 weights = 1/Eff_var, 
+                 data=dat.Emp_tot, 
+                 ni=N,
+                 method = 'HS')
+
 summary(fit.emp_tot)
 
-sink(paste0(model.folder, 'Total Empathy Overall Model - no moderators.txt'))
+sink(paste0(model.folder, 'Total_Empathy_AC.txt'))
 summary(fit.emp_tot)
 sink()
 
@@ -141,18 +175,29 @@ REG.emp_tot
 fit.emp_tot.TF_R<-trimfill(fit.emp_tot, estimator = 'R0')
 fit.emp_tot.TF_R
 
+sink(paste0(model.folder, 'Total_Empathy_R0.txt'))
+summary(fit.emp_tot.TF_R)
+sink()
+
 jpeg(paste0(graphics.folder, 'R0_estimator_CU-tot_emp_Sup1A.jpeg'), res = 300, width = 7, height = 7, units = 'in')
 funnel(fit.emp_tot.TF_R)
 title(expression('Trim and Fill Results for Total Empathy (R'[0]*' Estimator)'))
 dev.off()
 
+#If correct, interpretations are completely different now
+#Bias against publishing negative effects (may be that it is not novel enough?)
+#Should report the corrected values using trim-and-fill - graph both, will stick with R0 in MS 
 fit.emp_tot.TF_L<-trimfill(fit.emp_tot, estimator = 'L0')
 fit.emp_tot.TF_L
+
+sink(paste0(model.folder, 'Total_Empathy_L0.txt'))
+summary(fit.emp_tot.TF_L)
+sink()
+
+jpeg(paste0(graphics.folder, 'L0_estimator_CU-tot_emp_Sup1B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
 funnel(fit.emp_tot.TF_L)
-
-
-#file drawer analysis
-fsn(yi=Eff, vi=Eff_var, data=dat.Emp_tot, type='Rosenthal', alpha = .05)
+title(expression('Trim and Fill Results for Total Empathy (L'[0]*' Estimator)'))
+dev.off()
 
 #################################################################################
 #Model for Affective Empathy: 
