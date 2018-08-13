@@ -12,6 +12,7 @@ library(metafor)
 library(stargazer)
 library(ggplot2)
 library(ggridges)
+library(mitml)
 #################################################################################
 #For Windows Laptop
 user<-Sys.getenv('USERPROFILE')
@@ -21,18 +22,73 @@ graphics.folder<-paste0(user, '/Box Sync/CU meta-analysis/Graphics_Folder/' )
 
 #################################################################################
 #For Linux workstation
-data.folder<-'~/Documents/CU_meta-analysis/Meta_Raw_Data/'
-model.folder<-'~/Documents/CU_meta-analysis/Output/'
-graphics.folder<-'~/Documents/CU_meta-analysis/Graphics_Folder/'
+wd<-'/home/mbarsted/GitHub/Meta-Analysis_Waller_et_al/'
+data.folder<-'/home/mbarsted/GitHub/Meta-Analysis_Waller_et_al/Meta_Raw_Data/'
+dir.create(data.folder)
+model.folder<-'/home/mbarsted/GitHub/Meta-Analysis_Waller_et_al/Output/'
+dir.create(model.folder)
+graphics.folder<-'/home/mbarsted/GitHub/Meta-Analysis_Waller_et_al/Graphics_Folder/'
+dir.create(graphics.folder)
 
 #################################################################################
 #Notes:   1. Correlations were transformed to Fisher's z
 #         2. Standardized differences were transformed to r then to Fisher's z
-#         3. Will require all results are exponentiated to return to -1:1 scale 
+#         3. Will require all results are exponentiated to return to -1:1 scale
 #################################################################################
-dat<-read.csv(paste0(data.folder, 'Copy of Meta dataset_041018.csv'), stringsAsFactors = F)
+
+#################################################################################
+#Analytic Notes: 
+#   Based on feedback from JH, decided to take psychometric meta-anlatyic approach
+#   Invovles correcting effect sizes & variances for attenuation 
+#   See for more details: 
+#     Schmidt, F. L., & Hunter, J. E. (2015). Methods of meta-analysis: Correcting 
+#       error and bias in research findings (3rd ed.). Washington, DC: SAGE.  
+
+dat<-read.csv(paste0(wd, 'Model_Data_w-Reliability_081218.csv'), stringsAsFactors = F)
 colnames(dat)[1]<-'id'
-colnames(dat)[23]<-'Out_resp'
+
+#Imputing missing reliabilities prior to recoding. 
+psych::describe(dat)
+
+#Need to create a series of binary variables - cannot handle categorical variables
+dat$Emp_tot<-ifelse(dat$Outcome=='empathy_tot', 1, 0)
+dat$Emp_aff<-ifelse(dat$Outcome=='empathy_aff', 1, 0)
+dat$Emp_cog<-ifelse(dat$Outcome=='empathy_cog', 1, 0)
+dat$prosocial<-ifelse(dat$Outcome=='prosocial', 1, 0)
+dat$guilt<-ifelse(dat$Outcome=='guilt', 1, 0)
+
+#selecting total empathy as reference value - largest N
+dat.imp<-dat[c('id', 
+               'female', 
+               'age', 
+               'N', 
+               'Emp_aff', 
+               'Emp_cog', 
+               'prosocial',
+               'guilt',
+               'Eff', 
+               'Eff_var', 
+               'CU_resp', 
+               'Out_resp', 
+               'Samp_typ', 
+               'CU_Rel', 
+               'Out_Rel')]
+
+#Imputation Model
+fml<-CU_Rel+Out_Rel+female+age+N+
+  Emp_aff+Emp_cog+prosocial+guilt+Eff+Eff_var+CU_resp+Out_resp+Samp_typ~1+(1|id)
+
+imp<-panImpute(dat.imp, 
+               formula = fml, 
+               n.burn = 100000, 
+               n.iter = 100, 
+               m = 50
+               )
+
+summary(imp)
+plot(imp, trace = 'all', print='beta', pos=c(1,4))
+
+str(dat.imp)
 
 #some cleanup and recoding
 dat$CU_resp.R[dat$CU_resp==0]<-'Self'
@@ -53,6 +109,9 @@ dat.Emp_aff<-dat[dat$Outcome=='empathy_aff',]
 dat.Emp_cog<-dat[dat$Outcome=='empathy_cog',] 
 dat.glt<-dat[dat$Outcome=='guilt',]   #note probably have too few for guilt
 dat.prosoc<-dat[dat$Outcome=='prosocial',]
+
+#################################################################################
+
 
 #################################################################################
 #Model for Total Empathy: 
