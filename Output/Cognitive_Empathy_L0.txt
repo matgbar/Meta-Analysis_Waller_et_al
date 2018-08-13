@@ -1,23 +1,23 @@
 
-Estimated number of missing studies on the left side: 3 (SE = 2.9457)
+Estimated number of missing studies on the right side: 9 (SE = 2.4246)
 
-Random-Effects Model (k = 22; tau^2 estimator: HS)
+Random-Effects Model (k = 27; tau^2 estimator: HS)
 
   logLik  deviance       AIC       BIC      AICc  
- -7.6150   87.7816   19.2299   21.4120   19.8615  
+-14.1419  107.4278   32.2839   34.8755   32.7839  
 
-tau^2 (estimated amount of total heterogeneity): 0.0476 (SE = 0.0208)
-tau (square root of estimated tau^2 value):      0.2182
-I^2 (total heterogeneity / total variability):   92.97%
-H^2 (total variability / sampling variability):  14.23
+tau^2 (estimated amount of total heterogeneity): 0.1596 (SE = 0.0559)
+tau (square root of estimated tau^2 value):      0.3994
+I^2 (total heterogeneity / total variability):   96.55%
+H^2 (total variability / sampling variability):  28.95
 
 Test for Heterogeneity: 
-Q(df = 21) = 336.3000, p-val < .0001
+Q(df = 26) = 804.8834, p-val < .0001
 
 Model Results:
 
-estimate      se     zval    pval    ci.lb    ci.ub     
- -0.4576  0.0754  -6.0713  <.0001  -0.6054  -0.3099  ***
+estimate      se    zval    pval   ci.lb   ci.ub    
+  0.3291  0.1036  3.1774  0.0015  0.1261  0.5321  **
 
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 

@@ -1,7 +1,4 @@
 
-Estimated number of missing studies on the right side: 0 (SE = 1.4142)
-Test of H0: no missing studies on the right side: p-val = 0.5000
-
 Random-Effects Model (k = 18; tau^2 estimator: HS)
 
   logLik  deviance       AIC       BIC      AICc  

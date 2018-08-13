@@ -317,7 +317,12 @@ dev.off()
 
 #################################################################################
 #Model for Guilt: 
-fit.glt<-rma(yi=Eff, vi=Eff_var, data=dat.glt, method = 'FE')
+fit.glt<-rma(yi=Eff.r, 
+             vi=Eff_var, 
+             weights = 1/Eff_var, 
+             data=dat.glt, 
+             ni=N,
+             method = 'FE')
 summary(fit.glt)
 
 sink(paste0(model.folder, 'Guilt Overall Model - no moderators.txt'))
@@ -326,25 +331,26 @@ sink()
 
 jpeg(paste0(graphics.folder, 'CU and Guilt - Forest.jpeg'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.glt, order = 'obs', slab=dat.glt$citation)
-title("Relation between CU Traits and Guilt (Fisher's z)")
+title("Relation between CU Traits and Guilt")
 dev.off()
 
 jpeg(paste0(graphics.folder, 'CU and Guilt - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
 funnel(fit.glt)
-title("Funnel Plot of CU Relation with Guilt (Fisher's z)")
+title("Funnel Plot of CU Relation with Guilt")
 dev.off()
 
 ###########################################################################################
 #Model comparing two forms of empathy - within study differences in effects
 #merging and cleaning data set
 dat.emp_comp<-merge(dat.Emp_aff, dat.Emp_cog, by='id')
-cols<-c(1:5, 12, 14, 15, 27,28,31, 42, 44, 45)
+
+cols<-c(1,16,3:5,10,23,24,17,18,13,32,46,47)
 dat.emp_comp<-dat.emp_comp[,cols]
-colnames(dat.emp_comp)<-c('id', 'citation', 'female', 'age', 'N', 'R.affective',
+colnames(dat.emp_comp)<-c('id', 'citation', 'female', 'age', 'N', 'R_affective',
                           'Eff_affective', 'Eff_var_affective', 'CU_resp', 'Out_resp',
                           'Sample', 'R_cognitive', 'Eff_cognitive', 'Eff_var_cognitive')
 
-#Correlations pulled from studies: 
+#Correlations pulled from studies, ordered by citation: 
 Aff_cog_cor<-c(.063, .063, .35, 0, 0, .49, 0, .5, 0, .76, .32, 0, -.01, .08,0,.45,0,0)
 
 #Calculating difference in effects and variance terms adjusted for outcome correlation
@@ -355,7 +361,14 @@ dat.emp_comp$Eff<-Eff
 dat.emp_comp$Eff_var<-Eff_var
 #------------------------------------------------------------------------------------------
 #Random effects model for difference in effects:
-fit.emp_comp<-rma(yi=Eff, vi=Eff_var, data=dat.emp_comp)
+fit.emp_comp<-rma(yi=Eff, 
+                  vi=Eff_var, 
+                  weights = 1/Eff_var, 
+                  data=dat.emp_comp, 
+                  ni=N,
+                  method = 'HS'
+                  )
+
 summary(fit.emp_comp)
 
 sink(paste0(model.folder, 'Difference in Empathy Dimension Model - no moderators.txt'))
@@ -364,7 +377,7 @@ sink()
 
 jpeg(paste0(graphics.folder, 'Difference in Empathy Model - Forest.jpeg'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_comp, order = 'obs', slab=dat.emp_comp$citation)
-title("Difference in Relation between CU and Empathy Dimensions (Fisher's z)")
+title("Difference in Relation between CU and Empathy Dimensions")
 dev.off()
 
 jpeg(paste0(graphics.folder, 'Difference in Empathy Dimension Model - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
@@ -374,20 +387,33 @@ dev.off()
 
 #---------------------------------------------------------------------------------
 #testing for publication bias 
-REG.emp_comp<-regtest(fit.emp_comp, model = 'lm')
-REG.emp_comp
-
 #Trim and fill model
 fit.emp_comp.TF_R<-trimfill(fit.emp_comp, estimator = 'R0')
 fit.emp_comp.TF_R
-funnel(fit.emp_comp.TF_R)
 
+sink(paste0(model.folder, 'Cognitive_Empathy_R0.txt'))
+summary(fit.emp_comp.TF_R)
+sink()
+
+jpeg(paste0(graphics.folder, 'R0_estimator_CU-comp_emp_Sup4A.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.emp_comp.TF_R)
+title(expression('Trim and Fill Results for Cognitive Empathy (R'[0]*' Estimator)'))
+dev.off()
+
+#If correct, interpretations are completely different now
+#Bias against publishing negative effects (may be that it is not novel enough?)
+#Should report the corrected values using trim-and-fill - graph both, will stick with R0 in MS 
 fit.emp_comp.TF_L<-trimfill(fit.emp_comp, estimator = 'L0')
 fit.emp_comp.TF_L
-funnel(fit.emp_comp.TF_L)
 
-#file drawer analysis
-fsn(yi=Eff, vi=Eff_var, data=dat.emp_comp, type='Rosenthal', alpha = .05)
+sink(paste0(model.folder, 'Cognitive_Empathy_L0.txt'))
+summary(fit.emp_comp.TF_L)
+sink()
+
+jpeg(paste0(graphics.folder, 'L0_estimator_CU-comp_emp_Sup3B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.emp_comp.TF_L)
+title(expression('Trim and Fill Results for Cognitive Empathy (L'[0]*' Estimator)'))
+dev.off()
 
 
 #############################################################################
