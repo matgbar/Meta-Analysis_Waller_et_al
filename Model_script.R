@@ -129,10 +129,10 @@ dat.Emp_tot<-dat.imp[rowSums(dat.imp[c('Emp_aff',
                                        'guilt', 
                                        'prosocial')]
                              )==0,]
-dat.Emp_aff<-dat[dat.imp$Emp_aff==1,]
-dat.Emp_cog<-dat[dat.imp$Emp_cog==1,] 
-dat.glt<-dat[dat.imp$guilt==1,]   #note probably have too few for guilt
-dat.prosoc<-dat[dat$prosocial==1,]
+dat.Emp_aff<-dat.imp[dat.imp$Emp_aff==1,]
+dat.Emp_cog<-dat.imp[dat.imp$Emp_cog==1,] 
+dat.glt<-dat.imp[dat.imp$guilt==1,]   #note probably have too few for guilt
+dat.prosoc<-dat.imp[dat.imp$prosocial==1,]
 
 #################################################################################
 #Applying Attenuation Correction to Effects and Variances - based on JH's reccomendations
@@ -158,12 +158,12 @@ sink()
 
 jpeg(paste0(graphics.folder, 'CU and Total Empathy - Forest.jpeg'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_tot, order = 'obs', slab=dat.Emp_tot$citation)
-title("Relation between CU Traits and Total Empathy (Fisher's z)")
+title("Relation between CU Traits and Total Empathy")
 dev.off()
 
 jpeg(paste0(graphics.folder, 'CU and Total Empathy - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
 funnel(fit.emp_tot)
-title("Funnel Plot of CU Relation with Total Empathy (Fisher's z)")
+title("Funnel Plot of CU Relation with Total Empathy")
 dev.off()
 
 #---------------------------------------------------------------------------------
@@ -201,21 +201,27 @@ dev.off()
 
 #################################################################################
 #Model for Affective Empathy: 
-fit.emp_aff<-rma(yi=Eff, vi=Eff_var, data=dat.Emp_aff)
+fit.emp_aff<-rma(yi=Eff.r, 
+                 vi=Eff_var, 
+                 weights = 1/Eff_var, 
+                 data=dat.Emp_aff, 
+                 ni=N,
+                 method = 'HS')
+
 summary(fit.emp_aff)
 
-sink(paste0(model.folder, 'Affective Empathy Overall Model - no moderators.txt'))
+sink(paste0(model.folder, 'Affective_Empathy_AC.txt'))
 summary(fit.emp_aff)
 sink()
 
 jpeg(paste0(graphics.folder, 'CU and Affective Empathy - Forest.jpeg'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_aff, order = 'obs', slab=dat.Emp_aff$citation)
-title("Relation between CU Traits and Affective Empathy (Fisher's z)")
+title("Relation between CU Traits and Affective Empathy")
 dev.off()
 
 jpeg(paste0(graphics.folder, 'CU and Affective Empathy - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
 funnel(fit.emp_aff)
-title("Funnel Plot of CU Relation with Affective Empathy (Fisher's z)")
+title("Funnel Plot of CU Relation with Affective Empathy")
 dev.off()
 
 #---------------------------------------------------------------------------------
@@ -223,35 +229,57 @@ dev.off()
 REG.emp_aff<-regtest(fit.emp_aff, model = 'lm')
 REG.emp_aff
 
-#Trim and fill model - affective had no "imputed" studies
+#Trim and fill model
 fit.emp_aff.TF_R<-trimfill(fit.emp_aff, estimator = 'R0')
 fit.emp_aff.TF_R
-funnel(fit.emp_aff.TF_R)
 
+sink(paste0(model.folder, 'Affective_Empathy_R0.txt'))
+summary(fit.emp_aff.TF_R)
+sink()
+
+jpeg(paste0(graphics.folder, 'R0_estimator_CU-aff_emp_Sup2A.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.emp_aff.TF_R)
+title(expression('Trim and Fill Results for Affective Empathy (R'[0]*' Estimator)'))
+dev.off()
+
+#If correct, interpretations are completely different now
+#Bias against publishing negative effects (may be that it is not novel enough?)
+#Should report the corrected values using trim-and-fill - graph both, will stick with R0 in MS 
 fit.emp_aff.TF_L<-trimfill(fit.emp_aff, estimator = 'L0')
 fit.emp_aff.TF_L
-funnel(fit.emp_aff.TF_L)
 
-#file drawer analysis
-fsn(yi=Eff, vi=Eff_var, data=dat.Emp_aff, type='Rosenthal', alpha = .05)
+sink(paste0(model.folder, 'Affective_Empathy_L0.txt'))
+summary(fit.emp_aff.TF_L)
+sink()
+
+jpeg(paste0(graphics.folder, 'L0_estimator_CU-aff_emp_Sup2B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.emp_aff.TF_L)
+title(expression('Trim and Fill Results for Affective Empathy (L'[0]*' Estimator)'))
+dev.off()
 
 #################################################################################
 #Model for Cognitive Empathy: 
-fit.emp_cog<-rma(yi=Eff, vi=Eff_var, data=dat.Emp_cog)
+fit.emp_cog<-rma(yi=Eff.r, 
+                 vi=Eff_var, 
+                 weights = 1/Eff_var, 
+                 data=dat.Emp_cog, 
+                 ni=N,
+                 method = 'HS')
+
 summary(fit.emp_cog)
 
-sink(paste0(model.folder, 'Cognitive Empathy Overall Model - no moderators.txt'))
+sink(paste0(model.folder, 'Cognitive_Empathy_AC.txt'))
 summary(fit.emp_cog)
 sink()
 
 jpeg(paste0(graphics.folder, 'CU and Cognitive Empathy - Forest.jpeg'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_cog, order = 'obs', slab=dat.Emp_cog$citation)
-title("Relation between CU Traits and Cognitive Empathy (Fisher's z)")
+title("Relation between CU Traits and Cognitive Empathy")
 dev.off()
 
 jpeg(paste0(graphics.folder, 'CU and Cognitive Empathy - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
 funnel(fit.emp_cog)
-title("Funnel Plot of CU Relation with Cognitive Empathy (Fisher's z)")
+title("Funnel Plot of CU Relation with Cognitive Empathy")
 dev.off()
 
 #---------------------------------------------------------------------------------
@@ -262,60 +290,30 @@ REG.emp_cog
 #Trim and fill model
 fit.emp_cog.TF_R<-trimfill(fit.emp_cog, estimator = 'R0')
 fit.emp_cog.TF_R
-funnel(fit.emp_cog.TF_R)
 
-jpeg(paste0(graphics.folder, 'R0_estimator_CU-cog_emp_Sup1C.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+sink(paste0(model.folder, 'Cognitive_Empathy_R0.txt'))
+summary(fit.emp_cog.TF_R)
+sink()
+
+jpeg(paste0(graphics.folder, 'R0_estimator_CU-cog_emp_Sup3A.jpeg'), res = 300, width = 7, height = 7, units = 'in')
 funnel(fit.emp_cog.TF_R)
 title(expression('Trim and Fill Results for Cognitive Empathy (R'[0]*' Estimator)'))
 dev.off()
 
+#If correct, interpretations are completely different now
+#Bias against publishing negative effects (may be that it is not novel enough?)
+#Should report the corrected values using trim-and-fill - graph both, will stick with R0 in MS 
 fit.emp_cog.TF_L<-trimfill(fit.emp_cog, estimator = 'L0')
 fit.emp_cog.TF_L
-funnel(fit.emp_cog.TF_L)
 
-#file drawer analysis
-fsn(yi=Eff, vi=Eff_var, data=dat.Emp_cog, type='Rosenthal', alpha = .05)
-
-#################################################################################
-#Model for Prosociality: 
-fit.prosoc<-rma(yi=Eff, vi=Eff_var, data=dat.prosoc)
-summary(fit.prosoc)
-
-sink(paste0(model.folder, 'Prosociality Overall Model - no moderators.txt'))
-summary(fit.prosoc)
+sink(paste0(model.folder, 'Cognitive_Empathy_L0.txt'))
+summary(fit.emp_cog.TF_L)
 sink()
 
-jpeg(paste0(graphics.folder, 'CU and Prosociality - Forest.jpeg'), res=300, width = 7, height=7, units='in')
-forest.rma(fit.prosoc, order = 'obs', slab=dat.prosoc$citation)
-title("Relation between CU Traits and Prosociality (Fisher's z)")
+jpeg(paste0(graphics.folder, 'L0_estimator_CU-cog_emp_Sup3B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.emp_cog.TF_L)
+title(expression('Trim and Fill Results for Cognitive Empathy (L'[0]*' Estimator)'))
 dev.off()
-
-jpeg(paste0(graphics.folder, 'CU and Prosociality - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
-funnel(fit.prosoc)
-title("Funnel Plot of CU Relation with Prosociality (Fisher's z)")
-dev.off()
-
-#---------------------------------------------------------------------------------
-#testing for publication bias 
-REG.prosoc<-regtest(fit.prosoc, model = 'lm')
-REG.prosoc
-
-#Trim and fill model
-fit.prosoc.TF_R<-trimfill(fit.prosoc, estimator = 'R0')
-fit.prosoc.TF_R
-funnel(fit.prosoc.TF_R)
-
-jpeg(paste0(graphics.folder, 'R0_estimator_CU-prosoc_Sup1B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
-funnel(fit.prosoc.TF_R)
-title(expression('Trim and Fill Results for Prosociality (R'[0]*' Estimator)'))
-dev.off()
-
-fit.prosoc.TF_L<-trimfill(fit.prosoc, estimator = 'L0')
-fit.prosoc.TF_L
-funnel(fit.prosoc.TF_L)
-
-#file drawer analysis
-fsn(yi=Eff, vi=Eff_var, data=dat.prosoc, type='Rosenthal', alpha = .05)
 
 #################################################################################
 #Model for Guilt: 
