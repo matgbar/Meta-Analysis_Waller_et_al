@@ -359,6 +359,7 @@ Eff_var<-dat.emp_comp$Eff_var_affective+dat.emp_comp$Eff_var_cognitive-2*Aff_cog
 
 dat.emp_comp$Eff<-Eff
 dat.emp_comp$Eff_var<-Eff_var
+
 #------------------------------------------------------------------------------------------
 #Random effects model for difference in effects:
 fit.emp_comp<-rma(yi=Eff, 
@@ -402,7 +403,7 @@ dev.off()
 
 #If correct, interpretations are completely different now
 #Bias against publishing negative effects (may be that it is not novel enough?)
-#Should report the corrected values using trim-and-fill - graph both, will stick with R0 in MS 
+
 fit.emp_comp.TF_L<-trimfill(fit.emp_comp, estimator = 'L0')
 fit.emp_comp.TF_L
 
@@ -410,44 +411,80 @@ sink(paste0(model.folder, 'Cognitive_Empathy_L0.txt'))
 summary(fit.emp_comp.TF_L)
 sink()
 
-jpeg(paste0(graphics.folder, 'L0_estimator_CU-comp_emp_Sup3B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+jpeg(paste0(graphics.folder, 'L0_estimator_CU-comp_emp_Sup4B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
 funnel(fit.emp_comp.TF_L)
 title(expression('Trim and Fill Results for Cognitive Empathy (L'[0]*' Estimator)'))
 dev.off()
 
+#------------------------------------------------------------------------------------------
+#Model for Cognitive Empathy: 
+fit.prosoc<-rma(yi=Eff.r, 
+                 vi=Eff_var, 
+                 weights = 1/Eff_var, 
+                 data=dat.prosoc, 
+                 ni=N,
+                 method = 'HS')
+
+summary(fit.prosoc)
+
+sink(paste0(model.folder, 'Prosocial_AC.txt'))
+summary(fit.prosoc)
+sink()
+
+jpeg(paste0(graphics.folder, 'CU and Prosocialty - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+forest.rma(fit.prosoc, order = 'obs', slab=dat.prosoc$citation)
+title("Relation between CU Traits and Prosocialty")
+dev.off()
+
+jpeg(paste0(graphics.folder, 'CU and Prosocialty - Funnel.jpeg'), res=300, width = 7, height=7, units='in')
+funnel(fit.prosoc)
+title("Funnel Plot of CU Relation with Prosocialty")
+dev.off()
+
+#---------------------------------------------------------------------------------
+#testing for publication bias 
+REG.prosoc<-regtest(fit.prosoc, model = 'lm')
+REG.prosoc
+
+#Trim and fill model
+fit.prosoc.TF_R<-trimfill(fit.prosoc, estimator = 'R0')
+fit.prosoc.TF_R
+
+sink(paste0(model.folder, 'Prosocial_R0.txt'))
+summary(fit.prosoc.TF_R)
+sink()
+
+jpeg(paste0(graphics.folder, 'R0_estimator_CU-prosoc_Sup5A.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.prosoc.TF_R)
+title(expression('Trim and Fill Results for Prosocialty (R'[0]*' Estimator)'))
+dev.off()
+
+#If correct, interpretations are completely different now
+#Bias against publishing negative effects (may be that it is not novel enough?)
+#Should report the corrected values using trim-and-fill - graph both, will stick with R0 in MS 
+fit.prosoc.TF_L<-trimfill(fit.prosoc, estimator = 'L0')
+fit.prosoc.TF_L
+
+sink(paste0(model.folder, 'Prosocial_L0.txt'))
+summary(fit.prosoc.TF_L)
+sink()
+
+jpeg(paste0(graphics.folder, 'L0_estimator_CU-prosoc_Sup5B.jpeg'), res = 300, width = 7, height = 7, units = 'in')
+funnel(fit.prosoc.TF_L)
+title(expression('Trim and Fill Results for Prosocialty (L'[0]*' Estimator)'))
+dev.off()
 
 #############################################################################
-#Combining and transforming back to Pearson's r
-#Function for extracting vector of results (for use in creating a summary table)
-rtoz_summary<-function(DF, ci, mod, outcome){
-  #Extracting info about the data
-  k<-length(DF[,1])
-  N<-sum(DF$N)
-  #Extracting Model information
-  z<-mod$beta[,1]
-  z.se<-mod$se
-  z.LB<-z-z.se*qnorm(1-(1-ci)/2)
-  z.UB<-z+z.se*qnorm(1-(1-ci)/2)
-  rho<-(exp(z)-1)/(exp(z)+1)
-  rho.LB<-(exp(z.LB)-1)/(exp(z.LB)+1)
-  rho.UB<-(exp(z.UB)-1)/(exp(z.UB)+1)
-  DF.temp<-data.frame(Outcome=outcome,
-                      N=N, 
-                      k=k, 
-                      rho=round(rho, digits = 3),
-                      rho.LB=round(rho.LB, digits = 3),
-                      rho.UB=round(rho.UB, digits = 3)
-                      )
-  return(DF.temp)
-}
+#Function below not necessary if effects not converted r-to-z transfomrmation. 
 
-DF.summary<-rbind(rtoz_summary(dat.Emp_tot, .95, fit.emp_tot, 'Total Empathy'),
-                  rtoz_summary(dat.Emp_aff, .95, fit.emp_aff, 'Affective Empathy'),
-                  rtoz_summary(dat.Emp_cog, .95, fit.emp_cog, 'Cognitive Empathy'),
-                  rtoz_summary(dat.prosoc, .95, fit.prosoc, 'Prosociality'), 
-                  rtoz_summary(dat.glt, .95, fit.glt, 'Guilt'),
-                  rtoz_summary(dat.emp_comp, .95, fit.emp_comp, 'Affective-Cognitive')
-                  )
+#Extracting model summary for Each constrast
+Ints<-c(fit.emp_tot$b, fit.emp_aff$b, fit.emp_cog$b, fit.prosoc$b, fit.glt$b, fit.emp_comp$b)
+ses<-c(fit.emp_tot$se, fit.emp_aff$se, fit.emp_cog$se, fit.prosoc$se, fit.glt$se, fit.emp_comp$se)
+zvals<-c(fit.emp_tot$zval, fit.emp_aff$zval, fit.emp_cog$zval, fit.prosoc$zval, fit.glt$zval, fit.emp_comp$zval)
+pvals<-c(fit.emp_tot$pval, fit.emp_aff$pval, fit.emp_cog$pval, fit.prosoc$pval, fit.glt$pval, fit.emp_comp$pval)
+ci.lbs<-c(fit.emp_tot$ci.lb, fit.emp_aff$ci.lb, fit.emp_cog$ci.lb, fit.prosoc$ci.lb, fit.glt$ci.lb, fit.emp_comp$ci.lb)
+ci.ubs<-c(fit.emp_tot$ci.ub, fit.emp_aff$ci.ub, fit.emp_cog$ci.ub, fit.prosoc$ci.ub, fit.glt$ci.ub, fit.emp_comp$ci.ub)
+
 #Vectors of Q values & I^2 vals
 Q_vals<-c(fit.emp_tot$QE, fit.emp_aff$QE, fit.emp_cog$QE, fit.prosoc$QE, fit.glt$QE, fit.emp_comp$QE)
 Q_p<-c(fit.emp_tot$QEp, fit.emp_aff$QEp, fit.emp_cog$QEp, fit.prosoc$QEp, fit.glt$QEp, fit.emp_comp$QEp)
@@ -458,33 +495,60 @@ I_2<-c(round(fit.emp_tot$I2, digits = 2),
        round(fit.glt$I2, digits = 2),
        round(fit.emp_comp$I2, digits = 2))
 
-DF.summary<-data.frame(DF.summary, 
-                       Q = Q_vals,
-                       p = Q_p, 
-                       I = I_2) 
+DF.summary<-data.frame(Outcome=c('Total Empathy', 
+                     'Affective Empathy', 
+                     'Cognitive Empathy', 
+                     'Prosocialty', 
+                     'Guilt', 
+                     'Aff-Cog Empathy'),
+                     k=c(27, 18, 19, 19, 3, 18),
+                     rho = Ints, 
+                     se =ses, 
+                     zval=zvals, 
+                     pval=pvals, 
+                     ci.lb=ci.lbs, 
+                     ci.ub=ci.ubs,
+                     Q_val=Q_vals, 
+                     Q_p, 
+                     I_2
+                     )
 
-stargazer(DF.summary, summary = F, out=paste0(model.folder,'Model Summary - no moderators.txt'), rownames = F, 
-          notes = 'LB and UB based on 95% CI')
+stargazer(DF.summary, 
+          out = paste0(model.folder,'Unconditional Models.txt'), 
+          summary = F)
 
 #Plotting summary effect sizes 
-Emp_tot.se<-(exp(fit.emp_tot$se)-1)/(exp(fit.emp_tot$se)+1)
-Emp_aff.se<-(exp(fit.emp_aff$se)-1)/(exp(fit.emp_aff$se)+1)
-Emp_cog.se<-(exp(fit.emp_cog$se)-1)/(exp(fit.emp_cog$se)+1)
-Prosoc.se<-(exp(fit.prosoc$se)-1)/(exp(fit.prosoc$se)+1)
-Glt.se<-(exp(fit.glt$se)-1)/(exp(fit.glt$se)+1)
+Emp_tot.dist<-rnorm(100000, 
+                    mean=DF.summary$rho[DF.summary$Outcome=='Total Empathy'], 
+                    sd=DF.summary$se[DF.summary$Outcome=='Total Empathy'])
 
-Emp_tot.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Total Empathy'], sd=Emp_tot.se)
-Emp_aff.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Affective Empathy'], sd=Emp_aff.se)
-Emp_cog.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Cognitive Empathy'], sd=Emp_cog.se)
-Prosoc.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Prosociality'], sd=Prosoc.se)
-Glt.dist<-rnorm(100000, mean=DF.summary$rho[DF.summary$Outcome=='Guilt'], sd=Glt.se)
+Emp_aff.dist<-rnorm(100000, 
+                    mean=DF.summary$rho[DF.summary$Outcome=='Affective Empathy'], 
+                    sd=DF.summary$se[DF.summary$Outcome=='Affective Empathy'])
 
-DF.plot.dist2<-cbind(Emp_tot.dist, Emp_aff.dist, Emp_cog.dist, Prosoc.dist, Glt.dist)
-colnames(DF.plot.dist2)<-c('Total Empathy', 'Affective Empathy', 'Cognitive Empathy', 'Prosociality', 'Guilt')
+Emp_cog.dist<-rnorm(100000, 
+                    mean=DF.summary$rho[DF.summary$Outcome=='Cognitive Empathy'], 
+                    sd=DF.summary$se[DF.summary$Outcome=='Cognitive Empathy'])
+
+Prosoc.dist<-rnorm(100000, 
+                   mean=DF.summary$rho[DF.summary$Outcome=='Prosocialty'], 
+                   sd=DF.summary$se[DF.summary$Outcome=='Prosocialty'])
+
+Glt.dist<-rnorm(100000, 
+                mean=DF.summary$rho[DF.summary$Outcome=='Guilt'], 
+                sd=DF.summary$se[DF.summary$Outcome=='Guilt'])
+
+Emp_comp.dist<-rnorm(100000, 
+                     mean=DF.summary$rho[DF.summary$Outcome=='Aff-Cog Empathy'], 
+                     DF.summary$se[DF.summary$Outcome=='Aff-Cog Empathy'])
+
+DF.plot.dist2<-cbind(Emp_tot.dist, Emp_aff.dist, Emp_cog.dist, Prosoc.dist, Glt.dist, Emp_comp.dist)
+
+colnames(DF.plot.dist2)<-c('Total Empathy', 'Affective Empathy', 'Cognitive Empathy', 'Prosociality', 'Guilt', 'Aff-Cog')
 
 library(bayesplot)
 
-jpeg(paste0(graphics.folder, 'Model Summary Graphic.jpeg'), res=300, units='in', height=7, width=7)
+jpeg(paste0(graphics.folder, 'Unconditional Model Summary Graphic.jpeg'), res=300, units='in', height=7, width=7)
 mcmc_areas(DF.plot.dist2, prob=.95)+
   xlab(expression('Population Esimates of'~rho))
 dev.off()
