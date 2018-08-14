@@ -1066,6 +1066,7 @@ sum(temp.df.female$female*temp.df.female$N)/sum(temp.df.female$N)/100
 
 #############################################################################################################################
 library(metaSEM)
+library(RColorBrewer)
 
 #With Total Empathy Scores (this seems totally crazy to me...):
 dat.meta3<-dat.AC[dat.AC$Emp_cog!=1,]
@@ -1108,6 +1109,98 @@ sink(paste0(model.folder, 'Three-level_Emp_tot_Model.txt'))
 summary(fit.meta_Emp_tot)
 sink()
 
+#Variance Decomposition
+dat.meta3[,16:18]<-x
+colnames(dat.meta3)[16:18]<-c('Prosocial', 
+                              'Guilt', 
+                              'Total Empathy')
+
+Tau<-fit.meta_Emp_tot$mx.fit$Tau$values[2,2]
+
+gamma_b<-fit.meta_Emp_tot$mx.fit$Inter$values[1,1]
+
+gamma_w<-c(fit.meta_Emp_tot$mx.fit$Beta$values[1,1],
+           fit.meta_Emp_tot$mx.fit$Beta$values[1,2])
+
+within_cov<-c(16,17)
+between_cov<-NULL
+
+sigma2<-fit.meta_Emp_tot$mx.fit$Tau$values[1,1]
+
+var.decomp<-r2MLM(data=dat.meta3, 
+                  within_covs = within_cov,
+                  between_covs = between_cov,
+                  random_covs = NULL,
+                  gamma_w = gamma_w, 
+                  gamma_b = gamma_b, 
+                  Tau = Tau,
+                  sigma2 = sigma2)
+sink(paste0(model.folder, 'S1_JOYMood_VarDecomp.txt'))
+print(var.decomp)
+sink()
+
+meta_Emp_tot.var<-as.data.frame(var.decomp$Decompositions)
+meta_Emp_tot.var<-meta_Emp_tot.var[1:5,]
+
+meta_Emp_tot.var1<-data.frame(Component = rep(rownames(meta_Emp_tot.var), 3), 
+                            Variance = c(as.numeric(meta_Emp_tot.var[,1]), 
+                                         as.numeric(meta_Emp_tot.var[,2]), 
+                                         as.numeric(meta_Emp_tot.var[,3])
+                            ), 
+                            Denom = c(rep('Total', 5), 
+                                      rep('Within', 5), 
+                                      rep('Between', 5)
+                            )
+)
+
+rownames(meta_Emp_tot.var1)<-NULL
+
+#This took a lot of messing around - not sure I understand the logic of the reordering
+
+meta_Emp_tot.var1$Component<-factor(meta_Emp_tot.var1$Component, levels = c("sigma2",
+                                                                        "mean variation",
+                                                                        "fixed, between",
+                                                                        "fixed, within",
+                                                                        "slope variation")
+)
+
+meta_Emp_tot.var1$Denom<-factor(meta_Emp_tot.var1$Denom, levels = c('Total', 
+                                                                'Within', 
+                                                                'Between')
+)
+
+myColors <- brewer.pal(5,"Set3")
+names(myColors) <- levels(meta_Emp_tot.var1$Component)
+
+myColors[1]<-"#D3D3D3"
+myColors[2]<-"#808080"
+
+colScale <- scale_colour_manual(name = "Component",values = myColors)
+fillScale <- scale_fill_manual(name = "Component",values = myColors)
+
+g1<-ggplot(meta_Emp_tot.var1)+
+  geom_bar(aes(y=Variance, 
+               fill=Component,
+               color=Component, 
+               x=Denom
+  ), 
+  stat = 'identity', 
+  position = 'stack')+
+  colScale+
+  fillScale+
+  ggtitle('Three-level Variance Decomposition')+
+  xlab('Source of Variability')+
+  ylab('Proportion of Variance Explained')
+
+png(paste0(study2.graphics, '/S1_JOYMood_Decomposition.png'), 
+    res=300,
+    height = 8, 
+    width = 8, 
+    units = 'in')
+g1
+dev.off()
+
+#------------------------------------------------------------
 #Modeling prooscialty
 fit.meta_prosoc<-meta3(y=y,
                         v=v,
@@ -1138,6 +1231,7 @@ fit.meta_0int<-meta3(y=y,
                      )
 
 summary(fit.meta_0int)  
+
 #Adding additional covariates: 
 x2<-cbind(x, dat$age, dat$female, dat$CU_resp, dat$Out_resp, dat$Samp_typ)
 colnames(x2)[6:10]<-c('age', 'female', 'CU_resp', 'Out_resp', 'Samp_typ')
