@@ -1,0 +1,29 @@
+
+Call:
+meta3(y = y, v = v, cluster = ID)
+
+95% confidence intervals: z statistic approximation
+Coefficients:
+            Estimate  Std.Error     lbound     ubound  z value Pr(>|z|)    
+Intercept -0.4743012  0.0270980 -0.5274124 -0.4211900 -17.5032   <2e-16 ***
+Tau2_2     0.0158802  0.0177864 -0.0189804  0.0507408   0.8928   0.3719    
+Tau2_3     0.0096544  0.0182909 -0.0261951  0.0455040   0.5278   0.5976    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Q statistic on the homogeneity of effect sizes: 377.7789
+Degrees of freedom of the Q statistic: 48
+P value of the Q statistic: 0
+
+Heterogeneity indices (based on the estimated Tau2):
+                              Estimate
+I2_2 (Typical v: Q statistic)   0.5576
+I2_3 (Typical v: Q statistic)   0.3390
+
+Number of studies (or clusters): 44
+Number of observed statistics: 49
+Number of estimated parameters: 3
+Degrees of freedom: 46
+-2 log likelihood: -23.12565 
+OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
+Other values may indicate problems.)

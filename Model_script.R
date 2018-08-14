@@ -1063,3 +1063,88 @@ temp.df.female <- dat %>%
   distinct(citation, female, N)
 
 sum(temp.df.female$female*temp.df.female$N)/sum(temp.df.female$N)/100
+
+#############################################################################################################################
+library(metaSEM)
+
+#With Total Empathy Scores (this seems totally crazy to me...):
+dat.meta3<-dat.AC[dat.AC$Emp_cog!=1,]
+dat.meta3<-dat.meta3[dat.meta3$Emp_aff!=1,]
+
+#Total of 49 effects left..
+
+y<-dat.meta3$Eff
+v<-dat.meta3$Eff_var
+ID<-dat.meta3$id    #Note that this currently still has some within study break down by gender... (grrrrrrrrrr)
+
+#Prepping covariate matrix - for effects (at level 2)
+x<-matrix(ncol=3, nrow = 49)
+x[,1]<-dat.meta3$prosocial  #prosocial as the target category.
+x[,2]<-dat.meta3$guilt    #guilt as the target category
+x[,3]<-ifelse(dat.meta3$prosocial+dat.meta3$guilt>=1, 0, 1)
+
+colnames(x)<-c('Prosocial', 
+               'Guilt', 
+               'Total Empathy')
+
+#fitting null model
+fit.meta_null<-meta3(y=y,
+                     v=v,
+                     cluster = ID
+                     )
+
+sink(paste0(model.folder, 'Three-level_Null_Model.txt'))
+summary(fit.meta_null)
+sink()
+
+#Modeling Intercept as Total Empathy
+fit.meta_Emp_tot<-meta3(y=y,
+                        v=v,
+                        cluster = ID,
+                        x = x[,1:2]
+                        )
+                
+sink(paste0(model.folder, 'Three-level_Emp_tot_Model.txt'))
+summary(fit.meta_Emp_tot)
+sink()
+
+#Modeling prooscialty
+fit.meta_prosoc<-meta3(y=y,
+                        v=v,
+                        cluster = ID,
+                        x = x[,2:3]
+                       )
+
+sink(paste0(model.folder, 'Three-level_Prosocial_Model.txt'))
+summary(fit.meta_prosoc)
+sink()
+
+#Modeling glt
+fit.meta_glt<-meta3(y=y,
+                       v=v,
+                       cluster = ID,
+                       x = x[,c(1,3)]
+)
+
+sink(paste0(model.folder, 'Three-level_Guilt_Model.txt'))
+summary(fit.meta_glt)
+sink()
+
+fit.meta_0int<-meta3(y=y,
+                     v=v,
+                     cluster = ID,
+                     x = x, 
+                     intercept.constraints = 0
+                     )
+
+summary(fit.meta_0int)  
+#Adding additional covariates: 
+x2<-cbind(x, dat$age, dat$female, dat$CU_resp, dat$Out_resp, dat$Samp_typ)
+colnames(x2)[6:10]<-c('age', 'female', 'CU_resp', 'Out_resp', 'Samp_typ')
+
+fit.table2<-cbind(as.matrix(coef(fit.meta2)[1:10]), confint(fit.meta2)[1:10,])
+row.names(fit.table2)<-colnames(x2)
+colnames(fit.table2)<-c("Estimate", "Lower Bound", "Upper Bound")
+fit.table2
+
+#Separate Empathy Total from Empathy Affect/Cog [Empathy overall bigger focus]
