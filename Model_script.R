@@ -718,58 +718,144 @@ dev.off()
 
 #######################################################################################
 #Moderation analyses
+#######################################################################################
+#Total Empathy
 fit.emp_tot.mod_all<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var, 
+                         mods = ~female+age+Samp_typ+CU_resp+Out_resp, 
+                         data=dat.Emp_tot, 
+                         ni=N, 
+                         knha=T)
+summary(fit.emp_tot.mod_all)
+
+#Prosocial Model:
+table(dat.prosoc$CU_resp, dat.prosoc$Out_resp)
+#Perfectly equal - just pick one
+fit.prosoc.mod_all<-rma(yi=Eff, 
+                        vi=Eff_var,
+                        weights = 1/Eff_var,
+                        mods = ~female+age+Samp_typ+CU_resp, 
+                        data=dat.prosoc, 
+                        ni=N, 
+                        knha=T)
+summary(fit.prosoc.mod_all)  
+
+#Affective Empathy:
+table(dat.Emp_aff$CU_resp, dat.Emp_aff$Out_resp)
+
+fit.Emp_aff.mod_all<-rma(yi=Eff, 
+                        vi=Eff_var,
+                        weights = 1/Eff_var,
+                        mods = ~female+age+Samp_typ+CU_resp+Out_resp, 
+                        data=dat.Emp_aff, 
+                        ni=N, 
+                        knha=T)
+summary(fit.Emp_aff.mod_all)  
+
+#Cognitive Empathy Model:
+table(dat.Emp_cog$CU_resp, dat.Emp_cog$Out_resp)
+#Perfectly equal - just pick one
+fit.Emp_cog.mod_all<-rma(yi=Eff, 
+                        vi=Eff_var,
+                        weights = 1/Eff_var,
+                        mods = ~female+age+Samp_typ+CU_resp+Out_resp, 
+                        data=dat.Emp_cog, 
+                        ni=N, 
+                        knha=T)
+summary(fit.Emp_cog.mod_all)  
+
+##############################################################################################
+#Exploring single moderators now - Female
+fit.emp_tot.mod_female<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var, 
+                         mods = ~female, 
+                         data=dat.Emp_tot, 
+                         ni=N, 
+                         knha=T)
+summary(fit.emp_tot.mod_female)
+
+#Prosocial Model:
+fit.prosoc.mod_female<-rma(yi=Eff, 
+                        vi=Eff_var,
+                        weights = 1/Eff_var,
+                        mods = ~female, 
+                        data=dat.prosoc, 
+                        ni=N, 
+                        knha=T)
+summary(fit.prosoc.mod_female)  
+
+#Affective Empathy:
+fit.Emp_aff.mod_female<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var,
+                         mods = ~female, 
+                         data=dat.Emp_aff, 
+                         ni=N, 
+                         knha=T)
+summary(fit.Emp_aff.mod_female)  
+
+#Cognitive Empathy Model:
+fit.Emp_cog.mod_female<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var,
+                         mods = ~female, 
+                         data=dat.Emp_cog, 
+                         ni=N, 
+                         knha=T)
+summary(fit.Emp_cog.mod_female)  
+
+#############################################################################################
+#Exploring Moderators - age only
+fit.emp_tot.mod_age<-rma(yi=Eff, 
                          vi=Eff_var,
                          weights = 1/Eff_var, 
                          mods = ~age, 
                          data=dat.Emp_tot, 
                          ni=N, 
                          knha=T)
-summary(fit.emp_tot.mod_all)
+summary(fit.emp_tot.mod_age)
 
-fit.emp_tot.mod_female<-rma(yi=Eff, 
-                            vi=Eff_var, 
-                            mods = ~female, 
-                            data=dat.Emp_tot, 
-                            ni=N, 
-                            knha=T)
-summary(fit.emp_tot.mod_female)
-
-fit.emp_tot.mod_smpl<-rma(yi=Eff, 
-                          vi=Eff_var, 
-                          mods = ~Samp_typ, 
-                          data=dat.Emp_tot, 
-                          ni=N, 
-                          knha=T)
-summary(fit.emp_tot.mod_smpl)
-
-fit.emp_tot.mod_CU<-rma(yi=Eff, 
-                        vi=Eff_var, 
-                        mods = ~CU_resp, 
-                        data=dat.Emp_tot, 
-                        ni=N, 
-                        knha=T)
-summary(fit.emp_tot.mod_CU)
-
-fit.emp_tot.mod_Out<-rma(yi=Eff, 
-                         vi=Eff_var, 
-                         mods = ~Out_resp, 
-                         data=dat.Emp_tot, 
-                         ni=N, 
-                         knha=T)
-summary(fit.emp_tot.mod_Out)
-
-#None of the moderators were significant predictors... 
-
-#------------------------------------------------------------------------------------------
 #Prosocial Model:
 fit.prosoc.mod_age<-rma(yi=Eff, 
-                        vi=Eff_var, 
+                        vi=Eff_var,
+                        weights = 1/Eff_var,
                         mods = ~age, 
                         data=dat.prosoc, 
                         ni=N, 
                         knha=T)
-summary(fit.prosoc.mod_age)#Significant: 
+summary(fit.prosoc.mod_age)  
+
+fit.prosoc.mod_age2<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var,
+                         mods = ~age+I(age^2), 
+                         data=dat.prosoc, 
+                         ni=N, 
+                         knha=T)
+summary(fit.prosoc.mod_age2)
+
+#Affective Empathy:
+fit.Emp_aff.mod_age<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var,
+                         mods = ~age, 
+                         data=dat.Emp_aff, 
+                         ni=N, 
+                         knha=T)
+summary(fit.Emp_aff.mod_age)  
+
+#Cognitive Empathy Model:
+fit.Emp_cog.mod_age<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var,
+                         mods = ~age, 
+                         data=dat.Emp_cog, 
+                         ni=N, 
+                         knha=T)
+summary(fit.Emp_cog.mod_age)  
+
 #Exploring moderation graphically. 
 age<-seq(3, 18, by=.05)
 prosoc.age.pred<-predict(fit.prosoc.mod_age, newmods = age, level = 95)
@@ -780,8 +866,8 @@ g1<-ggplot()+
   geom_ribbon(data=prosoc.age.pred.DF, aes(x=Age,ymin=CI_LB, ymax=CI_UB), alpha=.50, color="#03396c", fill="#d1e1ec")+
   geom_point(data=dat.prosoc, aes(x=age, y=Eff))+
   geom_errorbar(data=dat.prosoc, aes(x=age, ymin=Eff-sqrt(Eff_var), ymax=Eff+sqrt(Eff_var)))+
-  ylab("Effect Size (Fisher's z)")+
-  xlab("Mean Age (yrs)")+
+  ylab(expression(paste("Effect Size: Pearson's ", italic('r'))))+
+  xlab("Sample Mean Age (yrs)")+
   geom_hline(yintercept = 0, lty='dashed')
 
 jpeg(paste0(graphics.folder, 'Prosoc_Moderated_by_Age.jpeg'), res=300, units='in', height = 8, width = 8)
@@ -1154,6 +1240,7 @@ var.decomp<-r2MLM(data=dat.meta3,
                   gamma_b = gamma_b, 
                   Tau = Tau,
                   sigma2 = sigma2)
+
 sink(paste0(model.folder, 'Three-level_VarDecomp.txt'))
 print(var.decomp)
 sink()
@@ -1170,6 +1257,14 @@ meta_Emp_tot.var1<-data.frame(Component = rep(rownames(meta_Emp_tot.var), 3),
                                         rep('Within', 5), 
                                         rep('Between', 5)
                               )
+                            Variance = c(as.numeric(meta_Emp_tot.var[,1]), 
+                                         as.numeric(meta_Emp_tot.var[,2]), 
+                                         as.numeric(meta_Emp_tot.var[,3])
+                            ), 
+                            Denom = c(rep('Total', 5), 
+                                      rep('Within', 5), 
+                                      rep('Between', 5)
+                            )
 )
 
 rownames(meta_Emp_tot.var1)<-NULL
@@ -1186,6 +1281,15 @@ meta_Emp_tot.var1$Component<-factor(meta_Emp_tot.var1$Component, levels = c("sig
 meta_Emp_tot.var1$Denom<-factor(meta_Emp_tot.var1$Denom, levels = c('Total', 
                                                                     'Within', 
                                                                     'Between')
+                                                                        "mean variation",
+                                                                        "fixed, between",
+                                                                        "fixed, within",
+                                                                        "slope variation")
+)
+
+meta_Emp_tot.var1$Denom<-factor(meta_Emp_tot.var1$Denom, levels = c('Total', 
+                                                                'Within', 
+                                                                'Between')
 )
 
 myColors <- brewer.pal(5,"Set3")

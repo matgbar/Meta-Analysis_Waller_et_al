@@ -1,0 +1,18 @@
+$Decompositions
+                total               within              between
+fixed, within   0.25817867975258    0.995964141666916   NA     
+fixed, between  0                   NA                  0      
+slope variation 0                   0                   NA     
+mean variation  0.74077512537703    NA                  1      
+sigma2          0.00104619487038962 0.00403585833308343 NA     
+
+$R2s
+    total            within            between
+f1  0.25817867975258 0.995964141666916 NA     
+f2  0                NA                0      
+v   0                0                 NA     
+m   0.74077512537703 NA                1      
+f   0.25817867975258 NA                NA     
+fv  0.25817867975258 0.995964141666916 NA     
+fvm 0.99895380512961 NA                NA     
+
