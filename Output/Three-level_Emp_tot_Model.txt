@@ -1,6 +1,6 @@
 
 Call:
-meta3(y = y, v = v, cluster = ID, x = x)
+meta3(y = y, v = v, cluster = ID, x = x[, 1:2])
 
 95% confidence intervals: z statistic approximation
 Coefficients:
