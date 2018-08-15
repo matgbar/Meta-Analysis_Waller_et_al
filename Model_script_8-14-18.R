@@ -980,7 +980,6 @@ colnames(dat.meta3)[16:18]<-c('Prosocial',
                               'Total Empathy')
 
 Tau<-fit.meta_Emp_tot$mx.fit$Tau$values[2,2]
-
 gamma_b<-fit.meta_Emp_tot$mx.fit$Inter$values[1,1]
 
 gamma_w<-c(fit.meta_Emp_tot$mx.fit$Beta$values[1,1],
@@ -998,7 +997,8 @@ var.decomp<-r2MLM(data=dat.meta3,
                   gamma_w = gamma_w, 
                   gamma_b = gamma_b, 
                   Tau = Tau,
-                  sigma2 = sigma2)
+                  sigma2 = sigma2, 
+                  clustermeancentered = F)
 
 sink(paste0(model.folder, 'Three-level_VarDecomp.txt'))
 print(var.decomp)
@@ -1015,7 +1015,7 @@ meta_Emp_tot.var1<-data.frame(Component = rep(rownames(meta_Emp_tot.var), 3),
                               Denom = c(rep('Total', 5), 
                                         rep('Within', 5), 
                                         rep('Between', 5)
-                              )
+                              ),
                             Variance = c(as.numeric(meta_Emp_tot.var[,1]), 
                                          as.numeric(meta_Emp_tot.var[,2]), 
                                          as.numeric(meta_Emp_tot.var[,3])
