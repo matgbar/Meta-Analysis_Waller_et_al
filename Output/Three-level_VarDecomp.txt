@@ -1,15 +1,15 @@
 $Decompositions
-                     total
-fixed           0.20211273
-slope variation 0.00000000
-mean variation  0.75713608
-sigma2          0.04075119
+                    total
+fixed           0.1498392
+slope variation 0.0000000
+mean variation  0.7268673
+sigma2          0.1232936
 
 $R2s
         total
-f   0.2021127
+f   0.1498392
 v   0.0000000
-m   0.7571361
-fv  0.2021127
-fvm 0.9592488
+m   0.7268673
+fv  0.1498392
+fvm 0.8767064
 
