@@ -2,15 +2,15 @@
 Fixed-Effects Model (k = 3)
 
   logLik  deviance       AIC       BIC      AICc  
-  1.9397    3.4516   -1.8795   -2.7809    2.1205  
+  2.7872    1.2515   -3.5745   -4.4758    0.4255  
 
 Test for Heterogeneity: 
-Q(df = 2) = 3.4516, p-val = 0.1780
+Q(df = 2) = 1.2515, p-val = 0.5349
 
 Model Results:
 
 estimate      se     zval    pval    ci.lb    ci.ub     
- -0.2914  0.0557  -5.2368  <.0001  -0.4005  -0.1824  ***
+ -0.3844  0.0639  -6.0138  <.0001  -0.5096  -0.2591  ***
 
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 

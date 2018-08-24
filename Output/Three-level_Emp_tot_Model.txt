@@ -4,29 +4,29 @@ meta3(y = y, v = v, cluster = ID, x = x[, 1:2])
 
 95% confidence intervals: z statistic approximation
 Coefficients:
-             Estimate   Std.Error      lbound      ubound  z value Pr(>|z|)    
-Intercept -4.1895e-01  3.7528e-02 -4.9251e-01 -3.4540e-01 -11.1637   <2e-16 ***
-Slope_1   -1.6459e-01  7.1702e-02 -3.0513e-01 -2.4060e-02  -2.2955   0.0217 *  
-Slope_2    9.3974e-02  8.8034e-02 -7.8571e-02  2.6652e-01   1.0675   0.2858    
-Tau2_2     3.1742e-05  6.8262e-03 -1.3347e-02  1.3411e-02   0.0047   0.9963    
-Tau2_3     2.2476e-02  1.0736e-02  1.4343e-03  4.3517e-02   2.0936   0.0363 *  
+            Estimate  Std.Error     lbound     ubound  z value Pr(>|z|)    
+Intercept -0.5233822  0.0383421 -0.5985313 -0.4482331 -13.6503  < 2e-16 ***
+Slope_1   -0.1330028  0.0638538 -0.2581539 -0.0078517  -2.0829  0.03726 *  
+Slope_2    0.0770834  0.1040087 -0.1267699  0.2809368   0.7411  0.45862    
+Tau2_2     0.0042233  0.0086501 -0.0127306  0.0211772   0.4882  0.62538    
+Tau2_3     0.0248982  0.0119948  0.0013889  0.0484075   2.0758  0.03792 *  
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-Q statistic on the homogeneity of effect sizes: 377.7789
+Q statistic on the homogeneity of effect sizes: 556.7159
 Degrees of freedom of the Q statistic: 48
 P value of the Q statistic: 0
 
 Explained variances (R2):
-                          Level 2 Level 3
-Tau2 (no predictor)    1.5880e-02  0.0097
-Tau2 (with predictors) 3.1742e-05  0.0225
-R2                     9.9800e-01  0.0000
+                         Level 2 Level 3
+Tau2 (no predictor)    0.0149564  0.0170
+Tau2 (with predictors) 0.0042233  0.0249
+R2                     0.7176258  0.0000
 
 Number of studies (or clusters): 44
 Number of observed statistics: 49
 Number of estimated parameters: 5
 Degrees of freedom: 44
--2 log likelihood: -32.82081 
+-2 log likelihood: -26.59406 
 OpenMx status1: 0 ("0" or "1": The optimization is considered fine.
 Other values may indicate problems.)

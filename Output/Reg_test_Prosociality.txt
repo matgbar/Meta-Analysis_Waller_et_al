@@ -4,5 +4,5 @@ Regression Test for Funnel Plot Asymmetry
 model:     weighted regression with multiplicative dispersion
 predictor: standard error
 
-test for funnel plot asymmetry: t = 1.0633, df = 17, p = 0.3025
+test for funnel plot asymmetry: t = -0.0068, df = 17, p = 0.9946
 
