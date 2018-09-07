@@ -1792,3 +1792,197 @@ text(-9, 39.5,
              .(formatC(fit.prosocR$I2, digits=1, format="f")), "%)")))
 title('Uncorrected Effects for Prosociality, Guilty, and Total Empathy')
 dev.off()
+
+#Creating separate tables for each construct 
+tiff(paste0(graphics.folder,'Affective vs Cognitive Empathy.tiff'), res=600, units = 'in', height = 8.5, width=11)
+par(cex=.80, font=1)
+forest(fit.graph1, xlim=c(-10, 2), 
+       order = order(dat.graph1$Outcome, dat.graph1$Eff), 
+       ilab = cbind(dat.graph1$N, 
+                    dat.graph1$female, 
+                    dat.graph1$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:20, 25:43),
+       ylim = c(-1,47), 
+       cex=.75, 
+       xlab=expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph1$cite.fac)
+
+par(cex=.80, font=4)
+text(-10, c(21, 44), pos=4, c('Affective Empathy', 'Cogntive Empathy'))
+
+par(font=4)
+text(-7, 46, 'N')
+par(font=2)
+text(c(-5, -3), 46, c('%Female', 'Mean Age'))
+text(-10, 46, 'Citation', pos=4)
+par(font=4)
+text(1.5,46, 'r')
+
+addpoly(fit.emp_aff, row=1.5, cex=.7, mlab = "")
+addpoly(fit.emp_cog, row=23.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
+     pos=4, 
+     cex=0.75,
+     bquote(
+       paste("RE Model for Affective Empathy (Q = ", 
+             .(formatC(fit.emp_aff$QE, digits=2, format="f")), 
+             ", df = ", 
+             .(fit.emp_aff$k - fit.emp_aff$p),
+             ", p = ", 
+             .(formatC(fit.emp_aff$QEp, digits=2, format="f")), 
+             "; ", I^2, " = ",
+             .(formatC(fit.emp_aff$I2, digits=1, format="f")), "%)")))
+
+text(-9, 23.5, 
+     pos=4, 
+     cex=0.75,
+     bquote(
+       paste("RE Model for Cognitive Empathy (Q = ", 
+             .(formatC(fit.emp_cog$QE, digits=2, format="f")), 
+             ", df = ", 
+             .(fit.emp_cog$k - fit.emp_cog$p),
+             ", p = ", 
+             .(formatC(fit.emp_cog$QEp, digits=2, format="f")), 
+             "; ", I^2, " = ",
+             .(formatC(fit.emp_cog$I2, digits=1, format="f")), "%)")))
+title('Corrected Effects for Cognitive and Affective Empathy')
+dev.off()
+
+##
+dat.graph2a<-dat.graph2[dat.graph2$Outcome=='emp_tot',]
+fit.graph2a<-rma(yi=Eff, vi=Eff_var, data=dat.graph2a)
+
+tiff(paste0(graphics.folder,'Total Empathy Summary.tiff'), res=600, units = 'in', height = 7.5, width=11)
+par(cex=.80, font=1)
+forest(fit.graph2a, xlim=c(-10, 2), 
+       order = order(dat.graph2a$Eff), 
+       ilab = cbind(dat.graph2a$N, 
+                    dat.graph2a$female, 
+                    dat.graph2a$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:29),
+       ylim = c(0,32), 
+       cex=.75, 
+       xlab = expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph2a$cite.fac)
+
+par(font=4)
+text(-7, 31, 'N')
+par(font=2)
+text(c(-5, -3), 31, c('%Female', 'Mean Age'))
+text(-10, 31, 'Citation', pos=4)
+par(font=4)
+text(1.5, 31, 'r')
+
+addpoly(fit.emp_tot, row=1.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
+     pos=4, 
+     cex=0.75,
+     bquote(
+       paste("RE Model for Total Empathy (Q = ", 
+             .(formatC(fit.emp_tot$QE, digits=2, format="f")), 
+             ", df = ", 
+             .(fit.emp_tot$k - fit.emp_tot$p),
+             ", p = ", 
+             .(formatC(fit.emp_tot$QEp, digits=2, format="f")), 
+             "; ", I^2, " = ",
+             .(formatC(fit.emp_tot$I2, digits=1, format="f")), "%)")))
+title('Corrected Effects for Total Empathy')
+dev.off()
+
+##
+dat.graph2b<-dat.graph2[dat.graph2$Outcome=='prosoc',]
+fit.graph2b<-rma(yi=Eff, vi=Eff_var, data=dat.graph2b)
+
+tiff(paste0(graphics.folder,'Prosociality Summary.tiff'), res=600, units = 'in', height = 6.5, width=11)
+par(cex=.80, font=1)
+forest(fit.graph2b, xlim=c(-10, 2), 
+       order = order(dat.graph2b$Eff), 
+       ilab = cbind(dat.graph2b$N, 
+                    dat.graph2b$female, 
+                    dat.graph2b$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:21),
+       ylim = c(0,24), 
+       cex=.75, 
+       xlab = expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph2b$cite.fac)
+
+par(font=4)
+text(-7, 23, 'N')
+par(font=2)
+text(c(-5, -3), 23, c('%Female', 'Mean Age'))
+text(-10, 23, 'Citation', pos=4)
+par(font=4)
+text(1.5, 23, 'r')
+
+addpoly(fit.prosoc, row=1.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
+     pos=4, 
+     cex=0.75,
+     bquote(
+       paste("RE Model for Prosociality (Q = ", 
+             .(formatC(fit.prosoc$QE, digits=2, format="f")), 
+             ", df = ", 
+             .(fit.prosoc$k - fit.prosoc$p),
+             ", p = ", 
+             .(formatC(fit.prosoc$QEp, digits=2, format="f")), 
+             "; ", I^2, " = ",
+             .(formatC(fit.prosoc$I2, digits=1, format="f")), "%)")))
+title('Corrected Effects for Prosociality')
+dev.off()
+
+##
+dat.graph2c<-dat.graph2[dat.graph2$Outcome=='guilt',]
+fit.graph2c<-rma(yi=Eff, vi=Eff_var, data=dat.graph2c)
+
+tiff(paste0(graphics.folder,'Guilt Summary.tiff'), res=600, units = 'in', height = 3, width=11)
+par(cex=.80, font=1)
+forest(fit.graph2c, xlim=c(-10, 2), 
+       order = order(dat.graph2c$Eff), 
+       ilab = cbind(dat.graph2c$N, 
+                    dat.graph2c$female, 
+                    dat.graph2c$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:5),
+       ylim = c(0,9), 
+       cex=.75, 
+       xlab = expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph2c$cite.fac)
+
+par(font=4)
+text(-7, 8, 'N')
+par(font=2)
+text(c(-5, -3), 8, c('%Female', 'Mean Age'))
+text(-10, 8, 'Citation', pos=4)
+par(font=4)
+text(1.5, 8, 'r')
+
+addpoly(fit.glt, row=1.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
+     pos=4, 
+     cex=0.75,
+     bquote(
+       paste("FE Model for Guilt (Q = ", 
+             .(formatC(fit.glt$QE, digits=2, format="f")), 
+             ", df = ", 
+             .(fit.glt$k - fit.glt$p),
+             ", p = ", 
+             .(formatC(fit.glt$QEp, digits=2, format="f")), 
+             "; ", I^2, " = ",
+             .(formatC(fit.glt$I2, digits=1, format="f")), "%)")))
+title('Corrected Effects for Guilt')
+dev.off()
