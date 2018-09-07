@@ -192,7 +192,7 @@ sink(paste0(model.folder, 'Total_Empathy_AC.txt'))
 summary(fit.emp_tot)
 sink()
 
-jpeg(paste0(graphics.folder, 'CU and Total Empathy - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+tiff(paste0(graphics.folder, 'CU and Total Empathy - Forest.tiff'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_tot, order = 'obs', slab=dat.Emp_tot$citation)
 title("Relation between CU Traits and Total Empathy")
 dev.off()
@@ -218,7 +218,7 @@ summary(fit.emp_tot.TF_L)
 sink()
 
 #Funnel plot for uncorrected correlations: 
-jpeg(paste0(graphics.folder, 'CU and Total Empathy - Funnels.jpeg'), res = 300, width = 11, height = 8, units = 'in')
+tiff(paste0(graphics.folder, 'CU and Total Empathy - Funnels.tiff'), res = 300, width = 11, height = 8, units = 'in')
 par(mfrow=c(1,2))
 funnel(fit.emp_tot_bias, 
        xlab = expression(paste('Uncorrected Correlations (', italic('r'), ')')), 
@@ -244,7 +244,7 @@ sink(paste0(model.folder, 'Affective_Empathy_AC.txt'))
 summary(fit.emp_aff)
 sink()
 
-jpeg(paste0(graphics.folder, 'CU and Affective Empathy - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+tiff(paste0(graphics.folder, 'CU and Affective Empathy - Forest.tiff'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_aff, order = 'obs', slab=dat.Emp_aff$citation)
 title("Relation between CU Traits and Affective Empathy")
 dev.off()
@@ -269,7 +269,7 @@ summary(fit.emp_aff.TF_L)
 sink()
 
 #Funnel plot for uncorrected correlations: 
-jpeg(paste0(graphics.folder, 'CU and Affective Empathy - Funnels.jpeg'), res = 300, width = 11, height = 8, units = 'in')
+tiff(paste0(graphics.folder, 'CU and Affective Empathy - Funnels.tiff'), res = 300, width = 11, height = 8, units = 'in')
 par(mfrow=c(1,2))
 funnel(fit.emp_aff_bias, 
        xlab = expression(paste('Uncorrected Correlations (', italic('r'), ')')), 
@@ -295,7 +295,7 @@ sink(paste0(model.folder, 'Cognitive_Empathy_AC.txt'))
 summary(fit.emp_cog)
 sink()
 
-jpeg(paste0(graphics.folder, 'CU and Cognitive Empathy - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+tiff(paste0(graphics.folder, 'CU and Cognitive Empathy - Forest.tiff'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_cog, order = 'obs', slab=dat.Emp_cog$citation)
 title("Relation between CU Traits and Cognitive Empathy")
 dev.off()
@@ -320,7 +320,7 @@ summary(fit.emp_cog.TF_L)
 sink()
 
 #Funnel plot for uncorrected correlations: 
-jpeg(paste0(graphics.folder, 'CU and Cognitive Empathy - Funnels.jpeg'), res = 300, width = 11, height = 8, units = 'in')
+tiff(paste0(graphics.folder, 'CU and Cognitive Empathy - Funnels.tiff'), res = 300, width = 11, height = 8, units = 'in')
 par(mfrow=c(1,2))
 funnel(fit.emp_cog_bias, 
        xlab = expression(paste('Uncorrected Correlations (', italic('r'), ')')), 
@@ -346,7 +346,7 @@ sink(paste0(model.folder, 'Prosocial_AC.txt'))
 summary(fit.prosoc)
 sink()
 
-jpeg(paste0(graphics.folder, 'CU and Prosocialty - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+tiff(paste0(graphics.folder, 'CU and Prosocialty - Forest.tiff'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.prosoc, order = 'obs', slab=dat.prosoc$citation)
 title("Relation between CU Traits and Prosocialty")
 dev.off()
@@ -371,7 +371,7 @@ summary(fit.prosoc.TF_L)
 sink()
 
 #Funnel plot for uncorrected correlations: 
-jpeg(paste0(graphics.folder, 'CU and Prosociality - Funnels.jpeg'), res = 300, width = 11, height = 8, units = 'in')
+tiff(paste0(graphics.folder, 'CU and Prosociality - Funnels.tiff'), res = 300, width = 11, height = 8, units = 'in')
 par(mfrow=c(1,2))
 funnel(fit.prosoc_bias, 
        xlab = expression(paste('Uncorrected Correlations (', italic('r'), ')')), 
@@ -396,7 +396,7 @@ sink(paste0(model.folder, 'Guilt Overall Model - no moderators.txt'))
 summary(fit.glt)
 sink()
 
-jpeg(paste0(graphics.folder, 'CU and Guilt - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+tiff(paste0(graphics.folder, 'CU and Guilt - Forest.tiff'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.glt, order = 'obs', slab=dat.glt$citation)
 title("Relation between CU Traits and Guilt")
 dev.off()
@@ -439,7 +439,7 @@ sink(paste0(model.folder, 'Difference in Empathy Dimension Model - no moderators
 summary(fit.emp_comp)
 sink()
 
-jpeg(paste0(graphics.folder, 'Difference in Empathy Model - Forest.jpeg'), res=300, width = 7, height=7, units='in')
+tiff(paste0(graphics.folder, 'Difference in Empathy Model - Forest.tiff'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.emp_comp, order = 'obs', slab=dat.emp_comp$citation)
 title("Difference in Relation between CU and Empathy Dimensions")
 dev.off()
@@ -516,7 +516,7 @@ colnames(DF.plot.dist2)<-c('Total Empathy', 'Affective Empathy', 'Cognitive Empa
 
 library(bayesplot)
 
-jpeg(paste0(graphics.folder, 'Unconditional Model Summary Graphic.jpeg'), res=300, units='in', height=7, width=7)
+tiff(paste0(graphics.folder, 'Unconditional Model Summary Graphic.tiff'), res=300, units='in', height=7, width=7)
 mcmc_areas(DF.plot.dist2, prob=.95)+
   xlab(expression('Population Esimates of'~rho))+
   ggtitle('Simulated Distributions of Effect Sizes')
@@ -540,7 +540,7 @@ dat.graph1$age<-round(dat.graph1$age, digits = 2)
 
 par(mar=c(4,4,1,2))
 
-jpeg(paste0(graphics.folder,'Affective vs Cognitive Empathy.jpeg'), res=300, units = 'in', height = 8.5, width=11)
+tiff(paste0(graphics.folder,'Affective vs Cognitive Empathy.tiff'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.80, font=1)
 forest(fit.graph1, xlim=c(-10, 2), 
        order = order(dat.graph1$Outcome, dat.graph1$Eff), 
@@ -621,7 +621,7 @@ dat.graph2$Outcome<-ifelse(!is.na(dat.graph2$Outcome), dat.graph2$Outcome, 'emp_
 
 par(mar=c(4,4,1,2))
 
-jpeg(paste0(graphics.folder,'Main Effects summary.jpeg'), res=300, units = 'in', height = 8.5, width=11)
+tiff(paste0(graphics.folder,'Main Effects summary.tiff'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.80, font=1)
 forest(fit.graph2, xlim=c(-10, 2), 
        order = order(dat.graph2$Outcome, dat.graph2$Eff), 
@@ -744,18 +744,6 @@ fit.Emp_cog.mod_all<-rma(yi=Eff,
                         method = 'HS')
 summary(fit.Emp_cog.mod_all)  
 
-#Empathy Difference Model:
-table(dat.emp_comp$CU_resp, dat.emp_comp$Out_resp)
-fit.Emp_comp.mod_all<-rma(yi=Eff, 
-                         vi=Eff_var,
-                         weights = 1/Eff_var,
-                         mods = ~female+age+Sample+CU_resp+Out_resp+ICU, 
-                         data=dat.emp_comp, 
-                         ni=N, 
-                         knha=T, 
-                         method = 'HS')
-summary(fit.Emp_comp.mod_all)
-
 ##############################################################################################
 #Exploring single moderators now - Female
 fit.emp_tot.mod_female<-rma(yi=Eff, 
@@ -800,17 +788,6 @@ fit.Emp_cog.mod_female<-rma(yi=Eff,
                          knha=T, 
                          method = 'HS')
 summary(fit.Emp_cog.mod_female)  
-
-#Empathy Difference Model:
-fit.Emp_comp.mod_female<-rma(yi=Eff, 
-                          vi=Eff_var,
-                          weights = 1/Eff_var,
-                          mods = ~female, 
-                          data=dat.emp_comp, 
-                          ni=N, 
-                          knha=T, 
-                          method = 'HS')
-summary(fit.Emp_comp.mod_female)
 
 #############################################################################################
 #Exploring Moderators - age only
@@ -857,17 +834,6 @@ fit.Emp_cog.mod_age<-rma(yi=Eff,
                          method = 'HS')
 summary(fit.Emp_cog.mod_age)  
 
-#Empathy Difference Model:
-fit.Emp_comp.mod_age<-rma(yi=Eff, 
-                             vi=Eff_var,
-                             weights = 1/Eff_var,
-                             mods = ~age, 
-                             data=dat.emp_comp, 
-                             ni=N, 
-                             knha=T, 
-                          method = 'HS')
-summary(fit.Emp_comp.mod_age)
-
 #######################################################################################
 #Exploring moderators - Sample Type
 fit.emp_tot.mod_samp<-rma(yi=Eff, 
@@ -912,17 +878,6 @@ fit.Emp_cog.mod_samp<-rma(yi=Eff,
                          knha=T, 
                          method = 'HS')
 summary(fit.Emp_cog.mod_samp)
-
-#Empathy Difference Model:
-fit.Emp_comp.mod_samp<-rma(yi=Eff, 
-                             vi=Eff_var,
-                             weights = 1/Eff_var,
-                             mods = ~Sample, 
-                             data=dat.emp_comp, 
-                             ni=N, 
-                             knha=T, 
-                           method = 'HS')
-summary(fit.Emp_comp.mod_samp)
 
 #######################################################################################
 #Exploring moderators - CU_respondent
@@ -969,19 +924,6 @@ fit.Emp_cog.mod_CU_resp<-rma(yi=Eff,
                          method = 'HS')
 summary(fit.Emp_cog.mod_CU_resp)  
 
-#Empathy Difference Model:
-#Self is not the reference group by default in this data set (R's alphabetical sorting)
-dat.emp_comp$CU_resp.R<-ifelse(dat.emp_comp$CU_resp=='Self', 0, 1)
-fit.Emp_comp.mod_CU_resp<-rma(yi=Eff, 
-                             vi=Eff_var,
-                             weights = 1/Eff_var,
-                             mods = ~CU_resp.R, 
-                             data=dat.emp_comp, 
-                             ni=N, 
-                             knha=T, 
-                             method = 'HS')
-summary(fit.Emp_comp.mod_CU_resp)
-
 #######################################################################################
 #Exploring moderators - Outcome respondent
 fit.emp_tot.mod_Out_resp<-rma(yi=Eff, 
@@ -1026,19 +968,6 @@ fit.Emp_cog.mod_Out_resp<-rma(yi=Eff,
                              knha=T, 
                              method = 'HS')
 summary(fit.Emp_cog.mod_Out_resp)  
-
-#Empathy Difference Model:
-#Self is not the reference group by default in this data set (R's alphabetical sorting)
-dat.emp_comp$Out_resp.R<-ifelse(dat.emp_comp$Out_resp=='Self', 0, 1)
-fit.Emp_comp.mod_Out_resp<-rma(yi=Eff, 
-                              vi=Eff_var,
-                              weights = 1/Eff_var,
-                              mods = ~Out_resp.R, 
-                              data=dat.emp_comp, 
-                              ni=N, 
-                              knha=T, 
-                              method = 'HS')
-summary(fit.Emp_comp.mod_Out_resp)
 
 #######################################################################################
 #Exploring moderators - ICU respondent
@@ -1085,28 +1014,6 @@ fit.Emp_cog.mod_ICU<-rma(yi=Eff,
                               method = 'HS')
 summary(fit.Emp_cog.mod_ICU)  
 
-#Empathy Difference Model:
-fit.Emp_comp.mod_ICU<-rma(yi=Eff, 
-                               vi=Eff_var,
-                               weights = 1/Eff_var,
-                               mods = ~ICU, 
-                               data=dat.emp_comp, 
-                               ni=N, 
-                               knha=T, 
-                               method = 'HS')
-summary(fit.Emp_comp.mod_ICU)
-
-#Summary of moderation analyses: 
-#1. Outcome respondent, but not CU respondent significantly predicted CU~Cognitive Empathy
-#   Note the association was stronger and more negative when others provided ratings of the outcome
-#2. Sample age predicted difference in affective-cognitive association with CU traits
-#   Younger kids CU~cognitive empathy is stronger
-#   Older kids CU~affective is stronger
-#3. CU and outcome respondent predicted difference in affective-cognitive association w/ CU 
-#   Measures of cognitive empathy were more strongly related to CU when 'other' instead of 'self' was the respondent
-#4. ICU predicted difference in affective-cognitive association w/ CU
-#   when ICU was used there was a stronger association between affective empathy and CU than cognitive empathy. 
-
 #############################################################################################################################
 #Graphing moderation
 #Exploring moderation graphically involving dichotomous ICU variable (Cognitive Empathy Model)
@@ -1126,7 +1033,7 @@ emp_aff.ICU.pred.DF<-cbind(ICU_self.dist, ICU_other.dist)
 colnames(emp_aff.ICU.pred.DF)<-c('CU Measure: Other', 'CU Measure: ICU')
 
 
-jpeg(paste0(graphics.folder, 'Aff_Moderated_by_ICU_Resp.jpeg'), res=300, units='in', height=8, width=11)
+tiff(paste0(graphics.folder, 'Aff_Moderated_by_ICU_Resp.tiff'), res=300, units='in', height=8, width=11)
 mcmc_areas(emp_aff.ICU.pred.DF, prob = .95)+
   xlab(expression(~rho))+
   ggtitle('Association between Affective Empathy and CU Traits as a Function of CU Measure')
@@ -1148,121 +1055,12 @@ Out_other.dist<-rnorm(100000, mean=Out_other, sd=Out_other.se)
 emp_cog.Out.pred.DF<-cbind(Out_self.dist, Out_other.dist)
 colnames(emp_cog.Out.pred.DF)<-c('Respondent: Self', 'Respondent: Other')
 
-jpeg(paste0(graphics.folder, 'Cog_Moderated_by_Out_Resp.jpeg'), res=300, units='in', height=8, width=11)
+tiff(paste0(graphics.folder, 'Cog_Moderated_by_Out_Resp.tiff'), res=300, units='in', height=8, width=11)
 mcmc_areas(emp_cog.Out.pred.DF, prob = .95)+
   xlab(expression(~rho))+
   ggtitle('Association between Cognitive Empathy and CU Traits as a Function of Cognitive Empathy Respondent')
 dev.off()
 
-#Exploring moderation graphically involving continuous age variable (aff-cog model)
-age<-seq(3, 18, by=.05)
-emp_comp.age.pred<-predict(fit.Emp_comp.mod_age, newmods = age, level = 95)
-emp_comp.age.pred.DF<-data.frame(Age=age, Pred_vals=emp_comp.age.pred$pred, CI_UB=emp_comp.age.pred$ci.ub, CI_LB=emp_comp.age.pred$ci.lb)
-
-g1<-ggplot()+
-  geom_line(data=emp_comp.age.pred.DF, aes(x=Age, y=Pred_vals),color="#03396c")+
-  geom_ribbon(data=emp_comp.age.pred.DF, aes(x=Age,ymin=CI_LB, ymax=CI_UB), alpha=.50, fill="#d1e1ec")+
-  geom_point(data=dat.emp_comp, aes(x=age, y=Eff))+
-  geom_errorbar(data=dat.emp_comp, aes(x=age, ymin=Eff-sqrt(Eff_var), ymax=Eff+sqrt(Eff_var)))+
-  ylab(expression(~Delta~rho))+  
-  xlab("Sample Mean Age (yrs)")+
-  geom_hline(yintercept = 0, lty='dashed')+
-  ggtitle('Difference in the Association between Empathy Dimensions and CU Traits as a Function of Age')+
-  bayesplot::theme_default()+
-  annotate(geom='text', x=12.5, y=.75, label= 'Cognitive Empathy ~ CU Traits is Stronger')+
-  annotate(geom='text', x=10, y = -.5, label= 'Affective Empathy ~ CU Traits is Stronger')
-
-jpeg(paste0(graphics.folder, 'Aff-Cog_Moderated_by_Age.jpeg'), res=300, units='in', height = 8, width = 11)
-g1
-dev.off()
-
-#Exploring moderation graphically involving dichotomous CU_resp variable (aff-cog model)
-CU_resp<-c(0,1)
-emp_comp.CU.pred<-predict(fit.Emp_comp.mod_CU_resp, newmods = CU_resp, level = 95)
-
-CU_self<-emp_comp.CU.pred$pred[1]
-CU_self.se<-emp_comp.CU.pred$se[1]
-
-CU_other<-emp_comp.CU.pred$pred[2]
-CU_other.se<-emp_comp.CU.pred$se[2]
-
-CU_self.dist<-rnorm(100000, mean=CU_self, sd=CU_self.se)
-CU_other.dist<-rnorm(100000, mean=CU_other, sd=CU_other.se)
-
-emp_comp.CU.pred.DF<-cbind(CU_self.dist, CU_other.dist)
-colnames(emp_comp.CU.pred.DF)<-c('Respondent: Self', 'Respondent: Other')
-
-g2<-mcmc_areas(emp_comp.CU.pred.DF, prob = .95)+
-  xlab(expression(~Delta~rho))+  ggtitle('Difference in the Association between Empathy Dimensions and CU Traits as a Function of CU Traits Respondent')+
-  annotate(geom='text', y=2.5, x = .40, label= 'Cognitive Empathy ~ CU Traits is Stronger')+
-  annotate("segment", x = .20, xend = .50, y = 2.3, yend = 2.3, size=2, arrow=arrow())+
-  annotate(geom='text', y=1.25, x = -.30, label= 'Affective Empathy ~ CU Traits is Stronger')+
-  annotate("segment", x = -.1, xend = -.40, y = 1.05, yend = 1.05, size=2, arrow=arrow())
-
-jpeg(paste0(graphics.folder, 'Aff-Cog_Moderated_by_CU_Resp.jpeg'), res=300, units='in', height=8, width=11)
-g2
-dev.off()
-
-#Exploring moderation graphically involving dichotomous Out_resp variable (aff-cog model)
-Out_resp<-c(0,1)
-emp_comp.Out.pred<-predict(fit.Emp_comp.mod_Out_resp, newmods = Out_resp, level = 95)
-
-Out_self<-emp_comp.Out.pred$pred[1]
-Out_self.se<-emp_comp.Out.pred$se[1]
-
-Out_other<-emp_comp.Out.pred$pred[2]
-Out_other.se<-emp_comp.Out.pred$se[2]
-
-Out_self.dist<-rnorm(100000, mean=Out_self, sd=Out_self.se)
-Out_other.dist<-rnorm(100000, mean=Out_other, sd=Out_other.se)
-
-emp_comp.Out.pred.DF<-cbind(Out_self.dist, Out_other.dist)
-colnames(emp_comp.Out.pred.DF)<-c('Respondent: Self', 'Respondent: Other')
-
-g3<-mcmc_areas(emp_comp.Out.pred.DF, prob = .95)+
-  xlab(expression(~Delta~rho))+
-  ggtitle('Difference in the Association between Empathy Dimensions and CU Traits as a Function of Empathy Respondent')+
-  annotate(geom='text', y=2.5, x = .40, label= 'Cognitive Empathy ~ CU Traits is Stronger')+
-  annotate("segment", x = .20, xend = .50, y = 2.3, yend = 2.3, size=2, arrow=arrow())+
-  annotate(geom='text', y=1.25, x = -.25, label= 'Affective Empathy ~ CU Traits is Stronger')+
-  annotate("segment", x = -.05, xend = -.35, y = 1.05, yend = 1.05, size=2, arrow=arrow())
-
-jpeg(paste0(graphics.folder, 'Aff-Cog_Moderated_by_Out_Resp.jpeg'), res=300, units='in', height=8, width=11)
-g3
-dev.off()
-
-#Exploring moderation graphically involving dichotomous ICU variable (aff-cog model)
-ICU_resp<-c(0,1)
-emp_comp.ICU.pred<-predict(fit.Emp_comp.mod_ICU, newmods = ICU_resp, level = 95)
-
-ICU_self<-emp_comp.ICU.pred$pred[1]
-ICU_self.se<-emp_comp.ICU.pred$se[1]
-
-ICU_other<-emp_comp.ICU.pred$pred[2]
-ICU_other.se<-emp_comp.ICU.pred$se[2]
-
-ICU_self.dist<-rnorm(100000, mean=ICU_self, sd=ICU_self.se)
-ICU_other.dist<-rnorm(100000, mean=ICU_other, sd=ICU_other.se)
-
-emp_comp.ICU.pred.DF<-cbind(ICU_self.dist, ICU_other.dist)
-colnames(emp_comp.ICU.pred.DF)<-c('CU Measure: Other', 'CU Measure: ICU')
-
-g4<-mcmc_areas(emp_comp.ICU.pred.DF, prob = .95)+
-  xlab(expression(~Delta~rho))+
-  ggtitle('Difference in the Association between Empathy Dimensions and CU Traits as a Function of CU Measure')+
-  annotate(geom='text', y=.7, x = .40, label= 'Cognitive Empathy ~ CU Traits is Stronger')+
-  annotate("segment", x = .20, xend = .50, y = .5, yend = .5, size=2, arrow=arrow())+
-  annotate(geom='text', y=2.5, x = -.4, label= 'Affective Empathy ~ CU Traits is Stronger')+
-  annotate("segment", x = -.2, xend = -.5, y = 2.3, yend = 2.3, size=2, arrow=arrow())
-
-jpeg(paste0(graphics.folder, 'Aff-Cog_Moderated_by_ICU_Resp.jpeg'), res=300, units='in', height=8, width=11)
-g4
-dev.off()
-
-#Combined Moderation plot for Affective-Cognitive Comparison
-jpeg(paste0(graphics.folder, 'Aff-Cog_Moderation_Comb.jpeg'), res=300, units='in', height=16, width=21.5)
-cowplot::plot_grid(g1, g2, g3, g4, labels=c('A', 'B', 'C', 'D'))
-dev.off()
 #############################################################################################################################
 #############################################################################################################################
 length(unique(dat$citation))#48 studies
@@ -1494,7 +1292,7 @@ g.glt
 #Note that some studies have multiple effects - have not partialed separted these (thought it would be possible)
 #Will keep graphic for GitHub - but will not include in supplement without separating out within study effects 
 
-jpeg(paste0(graphics.folder,'Attenuation Correction vs Raw Effects.jpeg'), res=300, units = 'in', height = 8, width=20)
+tiff(paste0(graphics.folder,'Attenuation Correction vs Raw Effects.tiff'), res=300, units = 'in', height = 8, width=20)
 cowplot::plot_grid(g.Emp_tot, g.Emp_aff, g.Emp_cog, g.prosoc, g.glt, 
                         labels = c('A', 'B', 'C', 'D', 'E'), nrow = 3)
 dev.off()
@@ -1618,7 +1416,7 @@ dat.graphS1$age<-round(dat.graphS1$age, digits = 2)
 
 par(mar=c(4,4,1,2))
 
-jpeg(paste0(graphics.folder,'Affective vs Cognitive Empathy_Uncorrected.jpeg'), res=300, units = 'in', height = 8.5, width=11)
+tiff(paste0(graphics.folder,'Affective vs Cognitive Empathy_Uncorrected.tiff'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.80, font=1)
 forest(fit.graph1, xlim=c(-10, 2), 
        order = order(dat.graphS1$Outcome, dat.graphS1$Eff), 
@@ -1721,7 +1519,7 @@ dat.graphS2$Outcome<-ifelse(!is.na(dat.graphS2$Outcome), dat.graphS2$Outcome, 'e
 
 par(mar=c(4,4,1,2))
 
-jpeg(paste0(graphics.folder,'Main Effects summary_Uncorrected.jpeg'), res=300, units = 'in', height = 8.5, width=11)
+tiff(paste0(graphics.folder,'Main Effects summary_Uncorrected.tiff'), res=300, units = 'in', height = 8.5, width=11)
 par(cex=.80, font=1)
 forest(fit.graph2, xlim=c(-10, 2), 
        order = order(dat.graphS2$Outcome, dat.graphS2$R), 
@@ -1793,66 +1591,7 @@ text(-9, 39.5,
 title('Uncorrected Effects for Prosociality, Guilty, and Total Empathy')
 dev.off()
 
-#Creating separate tables for each construct 
-tiff(paste0(graphics.folder,'Affective vs Cognitive Empathy.tiff'), res=600, units = 'in', height = 8.5, width=11)
-par(cex=.80, font=1)
-forest(fit.graph1, xlim=c(-10, 2), 
-       order = order(dat.graph1$Outcome, dat.graph1$Eff), 
-       ilab = cbind(dat.graph1$N, 
-                    dat.graph1$female, 
-                    dat.graph1$age),
-       ilab.xpos = c(-7, -5, -3), 
-       rows = c(3:20, 25:43),
-       ylim = c(-1,47), 
-       cex=.75, 
-       xlab=expression(~rho), 
-       mlab="", 
-       addfit = F,
-       slab = dat.graph1$cite.fac)
-
-par(cex=.80, font=4)
-text(-10, c(21, 44), pos=4, c('Affective Empathy', 'Cogntive Empathy'))
-
-par(font=4)
-text(-7, 46, 'N')
-par(font=2)
-text(c(-5, -3), 46, c('%Female', 'Mean Age'))
-text(-10, 46, 'Citation', pos=4)
-par(font=4)
-text(1.5,46, 'r')
-
-addpoly(fit.emp_aff, row=1.5, cex=.7, mlab = "")
-addpoly(fit.emp_cog, row=23.5, cex=.7, mlab = "")
-
-text(-9, 1.5, 
-     pos=4, 
-     cex=0.75,
-     bquote(
-       paste("RE Model for Affective Empathy (Q = ", 
-             .(formatC(fit.emp_aff$QE, digits=2, format="f")), 
-             ", df = ", 
-             .(fit.emp_aff$k - fit.emp_aff$p),
-             ", p = ", 
-             .(formatC(fit.emp_aff$QEp, digits=2, format="f")), 
-             "; ", I^2, " = ",
-             .(formatC(fit.emp_aff$I2, digits=1, format="f")), "%)")))
-
-text(-9, 23.5, 
-     pos=4, 
-     cex=0.75,
-     bquote(
-       paste("RE Model for Cognitive Empathy (Q = ", 
-             .(formatC(fit.emp_cog$QE, digits=2, format="f")), 
-             ", df = ", 
-             .(fit.emp_cog$k - fit.emp_cog$p),
-             ", p = ", 
-             .(formatC(fit.emp_cog$QEp, digits=2, format="f")), 
-             "; ", I^2, " = ",
-             .(formatC(fit.emp_cog$I2, digits=1, format="f")), "%)")))
-title('Corrected Effects for Cognitive and Affective Empathy')
-dev.off()
-
-##
+#Creating separate tables for each construct from main effects table: 
 dat.graph2a<-dat.graph2[dat.graph2$Outcome=='emp_tot',]
 fit.graph2a<-rma(yi=Eff, vi=Eff_var, data=dat.graph2a)
 
