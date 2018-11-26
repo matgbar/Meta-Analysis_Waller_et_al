@@ -517,130 +517,42 @@ dev.off()
 #Fitting two summary graphics (one for affective vs. cognitive) & one for summary vals
 #Code for graphic models was adapted from: http://www.metafor-project.org/doku.php/plots:forest_plot_with_subgroups
 dat.graph1<-dat.imp
-dat.graph1<-dat.graph1[dat.graph1$Emp_aff==1 | dat.graph1$Emp_cog==1,]
+dat.graph1<-dat.graph1[rowSums(dat.graph1[,5:8])==0,]
 
+dat.graph1$citation[dat.graph1$citation=='Anastassiou-Hadjicharalambous & Warden (2008)']<-'Anastassiou-H. & Warden (2008)'
 dat.graph1$cite.fac<-as.factor(dat.graph1$citation)
 fit.graph1<-rma(yi=Eff, vi=Eff_var, data=dat.graph1)
 
 #Adding back in Outcome as a variable
-dat.graph1$Outcome[dat.graph1$Emp_aff==1]<-'Affective Empathy'
-dat.graph1$Outcome[dat.graph1$Emp_cog==1]<-'Cognitive Empathy'
 dat.graph1$female<-round(dat.graph1$female, digits = 2)
 dat.graph1$age<-round(dat.graph1$age, digits = 2)
-
 par(mar=c(4,4,1,2))
 
-tiff(paste0(graphics.folder,'Affective vs Cognitive Empathy.tiff'), res=300, units = 'in', height = 8.5, width=11)
-par(cex=.80, font=1)
+tiff(paste0(graphics.folder,'Total Empathy.tiff'), res=1200, units = 'in', height = 7, width=10)
+par(cex=1, font=1)
 forest(fit.graph1, xlim=c(-10, 2), 
-       order = order(dat.graph1$Outcome, dat.graph1$Eff), 
+       order = order(dat.graph1$Eff), 
        ilab = cbind(dat.graph1$N, 
                     dat.graph1$female, 
                     dat.graph1$age),
        ilab.xpos = c(-7, -5, -3), 
-       rows = c(3:20, 25:43),
-       ylim = c(-1,47), 
+       rows = c(3:29),
+       ylim = c(-1,32), 
        cex=.75, 
        xlab=expression(~rho), 
        mlab="", 
        addfit = F,
        slab = dat.graph1$cite.fac)
 
-par(cex=.80, font=4)
-text(-10, c(21, 44), pos=4, c('Affective Empathy', 'Cogntive Empathy'))
-
+par(cex=1, font=4)
 par(font=4)
-text(-7, 46, 'N')
+text(-7, 31, 'N')
 par(font=2)
-text(c(-5, -3), 46, c('%Female', 'Mean Age'))
-text(-10, 46, 'Citation', pos=4)
-par(font=4)
-text(1.5,46, 'r')
-
-addpoly(fit.emp_aff, row=1.5, cex=.7, mlab = "")
-addpoly(fit.emp_cog, row=23.5, cex=.7, mlab = "")
-
-text(-9, 1.5, 
-     pos=4, 
-     cex=0.75,
-     bquote(
-       paste("RE Model for Affective Empathy (Q = ", 
-             .(formatC(fit.emp_aff$QE, digits=2, format="f")), 
-             ", df = ", 
-             .(fit.emp_aff$k - fit.emp_aff$p),
-             ", p = ", 
-             .(formatC(fit.emp_aff$QEp, digits=2, format="f")), 
-             "; ", I^2, " = ",
-             .(formatC(fit.emp_aff$I2, digits=1, format="f")), "%)")))
-
-text(-9, 23.5, 
-     pos=4, 
-     cex=0.75,
-     bquote(
-       paste("RE Model for Cognitive Empathy (Q = ", 
-             .(formatC(fit.emp_cog$QE, digits=2, format="f")), 
-             ", df = ", 
-             .(fit.emp_cog$k - fit.emp_cog$p),
-             ", p = ", 
-             .(formatC(fit.emp_cog$QEp, digits=2, format="f")), 
-             "; ", I^2, " = ",
-             .(formatC(fit.emp_cog$I2, digits=1, format="f")), "%)")))
-title('Corrected Effects for Cognitive and Affective Empathy')
-dev.off()
-
-#Unconditional Models (no moderators - publication graphics)
-#Fitting two summary graphics (one for affective vs. cognitive) & one for summary vals
-dat.graph2<-dat.imp
-
-dat.graph2<-dat.graph2[dat.graph2$Emp_aff!=1,]
-dat.graph2<-dat.graph2[dat.graph2$Emp_cog!=1,]
-dat.graph2$citation[dat.graph2$citation=='Anastassiou-Hadjicharalambous & Warden (2008)']<-'Anastassiou-H. & Warden (2008)'
-
-dat.graph2$cite.fac<-as.factor(dat.graph2$citation)
-fit.graph2<-rma(yi=Eff, vi=Eff_var, data=dat.graph2)
-
-#round down age and % female for purposes of plotting
-dat.graph2$female<-round(dat.graph2$female, digits = 2)
-dat.graph2$age<-round(dat.graph2$age, digits = 2)
-dat.graph2$Outcome[dat.graph2$prosocial==1]<-'prosoc'
-dat.graph2$Outcome[dat.graph2$guilt==1]<-'guilt'
-dat.graph2$Outcome<-ifelse(!is.na(dat.graph2$Outcome), dat.graph2$Outcome, 'emp_tot')
-
-#Note to self - adding spaces into variables - even string variables makes ordering of effects difficult on 
-#accompanying table/graphic
-
-par(mar=c(4,4,1,2))
-
-tiff(paste0(graphics.folder,'Main Effects summary.tiff'), res=300, units = 'in', height = 8.5, width=11)
-par(cex=.80, font=1)
-forest(fit.graph2, xlim=c(-10, 2), 
-       order = order(dat.graph2$Outcome, dat.graph2$Eff), 
-       ilab = cbind(dat.graph2$N, 
-                    dat.graph2$female, 
-                    dat.graph2$age),
-       ilab.xpos = c(-7, -5, -3), 
-       rows = c(3:29, 34:36, 41:59),
-       ylim = c(-1,63), 
-       cex=.75, 
-       xlab = expression(~rho), 
-       mlab="", 
-       addfit = F,
-       slab = dat.graph2$cite.fac)
-
-par(cex=.80, font=4)
-text(-10, c(30, 37, 60), pos=4, c('Total Empathy', 'Guilt', 'Prosociality'))
-
-par(font=4)
-text(-7, 62, 'N')
-par(font=2)
-text(c(-5, -3), 62, c('%Female', 'Mean Age'))
-text(-10, 62, 'Citation', pos=4)
-par(font=4)
-text(1.5,62, 'r')
+text(c(-5, -3), 31, c('%Female', 'Mean Age'))
+text(-10, 31, 'Citation', pos=4)
+text(1.25, 31, expression(paste(bolditalic('r'), '[LB,UB]')))
 
 addpoly(fit.emp_tot, row=1.5, cex=.7, mlab = "")
-addpoly(fit.glt, row=32.5, cex=.7, mlab = "")
-addpoly(fit.prosoc, row=39.5, cex=.7, mlab = "")
 
 text(-9, 1.5, 
      pos=4, 
@@ -655,20 +567,156 @@ text(-9, 1.5,
              "; ", I^2, " = ",
              .(formatC(fit.emp_tot$I2, digits=1, format="f")), "%)")))
 
-text(-9, 32.5, 
+title('Corrected Effects for Total Empathy')
+dev.off()
+
+#-------------------------------------------------------------------------------
+dat.graph2<-dat.imp
+dat.graph2<-dat.graph2[dat.graph2$Emp_aff==1,]
+
+dat.graph2$cite.fac<-as.factor(dat.graph2$citation)
+fit.graph2<-rma(yi=Eff, vi=Eff_var, data=dat.graph2)
+
+#Adding back in Outcome as a variable
+dat.graph2$female<-round(dat.graph2$female, digits = 2)
+dat.graph2$age<-round(dat.graph2$age, digits = 2)
+par(mar=c(4,4,1,2))
+
+tiff(paste0(graphics.folder,'Affective Empathy.tiff'), res=1200, units = 'in', height = 7, width=10)
+par(cex=1, font=1)
+forest(fit.graph2, xlim=c(-10, 2), 
+       order = order(dat.graph2$Eff), 
+       ilab = cbind(dat.graph2$N, 
+                    dat.graph2$female, 
+                    dat.graph2$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:20),
+       ylim = c(-1,23), 
+       cex=.75, 
+       xlab=expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph2$cite.fac)
+
+par(cex=1, font=4)
+par(font=4)
+text(-7, 22, 'N')
+par(font=2)
+text(c(-5, -3), 22, c('%Female', 'Mean Age'))
+text(-10, 22, 'Citation', pos=4)
+text(1.25, 22, expression(paste(bolditalic('r'), '[LB,UB]')))
+
+addpoly(fit.emp_aff, row=1.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
      pos=4, 
      cex=0.75,
      bquote(
-       paste("FE Model for Guilt (Q = ", 
-             .(formatC(fit.glt$QE, digits=2, format="f")), 
+       paste("RE Model for Affective Empathy (Q = ", 
+             .(formatC(fit.emp_aff$QE, digits=2, format="f")), 
              ", df = ", 
-             .(fit.glt$k - fit.glt$p),
+             .(fit.emp_aff$k - fit.emp_aff$p),
              ", p = ", 
-             .(formatC(fit.glt$QEp, digits=2, format="f")), 
+             .(formatC(fit.emp_aff$QEp, digits=2, format="f")), 
              "; ", I^2, " = ",
-             .(formatC(fit.glt$I2, digits=1, format="f")), "%)")))
+             .(formatC(fit.emp_aff$I2, digits=1, format="f")), "%)")))
 
-text(-9, 39.5, 
+title('Corrected Effects for Affective Empathy')
+dev.off()
+
+#-------------------------------------------------------------------------------
+dat.graph3<-dat.imp
+dat.graph3<-dat.graph3[dat.graph3$Emp_cog==1,]
+
+dat.graph3$cite.fac<-as.factor(dat.graph3$citation)
+fit.graph3<-rma(yi=Eff, vi=Eff_var, data=dat.graph3)
+
+#Adding back in Outcome as a variable
+dat.graph3$female<-round(dat.graph3$female, digits = 2)
+dat.graph3$age<-round(dat.graph3$age, digits = 2)
+par(mar=c(4,4,1,2))
+
+tiff(paste0(graphics.folder,'Cognitive Empathy.tiff'), res=1200, units = 'in', height = 7, width=10)
+par(cex=1, font=1)
+forest(fit.graph3, xlim=c(-10, 2), 
+       order = order(dat.graph3$Eff), 
+       ilab = cbind(dat.graph3$N, 
+                    dat.graph3$female, 
+                    dat.graph3$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:21),
+       ylim = c(-1,24), 
+       cex=.75, 
+       xlab=expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph3$cite.fac)
+
+par(cex=1, font=4)
+par(font=4)
+text(-7, 23, 'N')
+par(font=2)
+text(c(-5, -3), 23, c('%Female', 'Mean Age'))
+text(-10, 23, 'Citation', pos=4)
+text(1.25, 23, expression(paste(bolditalic('r'), '[LB,UB]')))
+
+addpoly(fit.emp_cog, row=1.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
+     pos=4, 
+     cex=0.75,
+     bquote(
+       paste("RE Model for Cognitive Empathy (Q = ", 
+             .(formatC(fit.emp_cog$QE, digits=2, format="f")), 
+             ", df = ", 
+             .(fit.emp_cog$k - fit.emp_cog$p),
+             ", p = ", 
+             .(formatC(fit.emp_cog$QEp, digits=2, format="f")), 
+             "; ", I^2, " = ",
+             .(formatC(fit.emp_cog$I2, digits=1, format="f")), "%)")))
+
+title('Corrected Effects for Cognitive Empathy')
+dev.off()
+
+#-------------------------------------------------------------------------------
+dat.graph4<-dat.imp
+dat.graph4<-dat.graph4[dat.graph4$prosocial==1,]
+
+dat.graph4$cite.fac<-as.factor(dat.graph4$citation)
+fit.graph4<-rma(yi=Eff, vi=Eff_var, data=dat.graph4)
+
+#Adding back in Outcome as a variable
+dat.graph4$female<-round(dat.graph4$female, digits = 2)
+dat.graph4$age<-round(dat.graph4$age, digits = 2)
+par(mar=c(4,4,1,2))
+
+tiff(paste0(graphics.folder,'Prosociality.tiff'), res=1200, units = 'in', height = 7, width=10)
+par(cex=1, font=1)
+forest(fit.graph4, xlim=c(-10, 2), 
+       order = order(dat.graph4$Eff), 
+       ilab = cbind(dat.graph4$N, 
+                    dat.graph4$female, 
+                    dat.graph4$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:21),
+       ylim = c(-1,24), 
+       cex=.75, 
+       xlab=expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph4$cite.fac)
+
+par(cex=1, font=4)
+par(font=4)
+text(-7, 23, 'N')
+par(font=2)
+text(c(-5, -3), 23, c('%Female', 'Mean Age'))
+text(-10, 23, 'Citation', pos=4)
+text(1.25, 23, expression(paste(bolditalic('r'), '[LB,UB]')))
+
+addpoly(fit.prosoc, row=1.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
      pos=4, 
      cex=0.75,
      bquote(
@@ -680,7 +728,62 @@ text(-9, 39.5,
              .(formatC(fit.prosoc$QEp, digits=2, format="f")), 
              "; ", I^2, " = ",
              .(formatC(fit.prosoc$I2, digits=1, format="f")), "%)")))
-title('Corrected Effects for Prosociality, Guilt, and Total Empathy')
+
+title('Corrected Effects for Prosociality')
+dev.off()
+
+#-------------------------------------------------------------------------------
+dat.graph5<-dat.imp
+dat.graph5<-dat.graph5[dat.graph5$guilt==1,]
+
+dat.graph5$cite.fac<-as.factor(dat.graph5$citation)
+fit.graph5<-rma(yi=Eff, vi=Eff_var, data=dat.graph5)
+
+#Adding back in Outcome as a variable
+dat.graph5$female<-round(dat.graph5$female, digits = 2)
+dat.graph5$age<-round(dat.graph5$age, digits = 2)
+par(mar=c(4,4,1,2))
+
+tiff(paste0(graphics.folder,'Guilt.tiff'), res=1200, units = 'in', height = 3.5, width=10)
+par(cex=1, font=1)
+forest(fit.graph5, xlim=c(-10, 2), 
+       order = order(dat.graph5$Eff), 
+       ilab = cbind(dat.graph5$N, 
+                    dat.graph5$female, 
+                    dat.graph5$age),
+       ilab.xpos = c(-7, -5, -3), 
+       rows = c(3:5),
+       ylim = c(-1,8), 
+       cex=.75, 
+       xlab=expression(~rho), 
+       mlab="", 
+       addfit = F,
+       slab = dat.graph5$cite.fac)
+
+par(cex=1, font=4)
+par(font=4)
+text(-7, 7, 'N')
+par(font=2)
+text(c(-5, -3), 7, c('%Female', 'Mean Age'))
+text(-10, 7, 'Citation', pos=4)
+text(1.25, 7, expression(paste(bolditalic('r'), '[LB,UB]')))
+
+addpoly(fit.glt, row=1.5, cex=.7, mlab = "")
+
+text(-9, 1.5, 
+     pos=4, 
+     cex=0.75,
+     bquote(
+       paste("RE Model for Guilt (Q = ", 
+             .(formatC(fit.glt$QE, digits=2, format="f")), 
+             ", df = ", 
+             .(fit.glt$k - fit.glt$p),
+             ", p = ", 
+             .(formatC(fit.glt$QEp, digits=2, format="f")), 
+             "; ", I^2, " = ",
+             .(formatC(fit.glt$I2, digits=1, format="f")), "%)")))
+
+title('Corrected Effects for Guilt')
 dev.off()
 
 #######################################################################################
@@ -1721,3 +1824,32 @@ text(-9, 1.5,
              .(formatC(fit.glt$I2, digits=1, format="f")), "%)")))
 title('Corrected Effects for Guilt')
 dev.off()
+
+#Empathy Comparison Model
+dat.emp_comp_uc<-merge(dat.Emp_aff, dat.Emp_cog, by='id')
+
+cols<-c(1,16,2:4,9, 10, 25,26,18,19,13,17,34,35,50,51)
+dat.emp_comp_uc<-dat.emp_comp_uc[,cols]
+colnames(dat.emp_comp_uc)<-c('id', 'citation', 'female', 'age', 'N', 'R_affective', 'R_var_affective',
+                          'Eff_affective', 'Eff_var_affective', 'CU_resp', 'Out_resp',
+                          'Sample','ICU', 'R_cognitive', 'R_var_cognitive', 'Eff_cognitive', 'Eff_var_cognitive')
+
+#Correlations pulled from studies when available, ordered by citation: 
+Aff_cog_cor<-c(.063, .063, .35, 0, 0, .49, 0, .5, 0, .76, .32, 0, -.01, .08,0,.45,0,0)
+#Calculating difference in effects and variance terms adjusted for outcome correlation
+Eff<-dat.emp_comp_uc$R_affective-dat.emp_comp_uc$R_cognitive
+Eff_var<-dat.emp_comp_uc$R_var_affective+dat.emp_comp_uc$R_var_cognitive-2*Aff_cog_cor*sqrt(dat.emp_comp_uc$R_var_affective*dat.emp_comp_uc$R_var_cognitive)
+
+#note that I stupidly changed naming conventions here - sorry
+#the Eff variable is corrected for attentuation, censored when an effect was < -1, and adjusted for the dependent nature of the correlations where possible
+dat.emp_comp_uc$Eff<-Eff
+dat.emp_comp_uc$Eff_var<-Eff_var
+
+fit.emp_comp_uc<-rma(yi=Eff, 
+                  vi=Eff_var, 
+                  weights = 1/Eff_var, 
+                  data=dat.emp_comp_uc, 
+                  ni=N
+)
+
+summary(fit.emp_comp_uc)
