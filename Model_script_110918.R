@@ -1721,3 +1721,32 @@ text(-9, 1.5,
              .(formatC(fit.glt$I2, digits=1, format="f")), "%)")))
 title('Corrected Effects for Guilt')
 dev.off()
+
+#Empathy Comparison Model
+dat.emp_comp_uc<-merge(dat.Emp_aff, dat.Emp_cog, by='id')
+
+cols<-c(1,16,2:4,9, 10, 25,26,18,19,13,17,34,35,50,51)
+dat.emp_comp_uc<-dat.emp_comp_uc[,cols]
+colnames(dat.emp_comp_uc)<-c('id', 'citation', 'female', 'age', 'N', 'R_affective', 'R_var_affective',
+                          'Eff_affective', 'Eff_var_affective', 'CU_resp', 'Out_resp',
+                          'Sample','ICU', 'R_cognitive', 'R_var_cognitive', 'Eff_cognitive', 'Eff_var_cognitive')
+
+#Correlations pulled from studies when available, ordered by citation: 
+Aff_cog_cor<-c(.063, .063, .35, 0, 0, .49, 0, .5, 0, .76, .32, 0, -.01, .08,0,.45,0,0)
+#Calculating difference in effects and variance terms adjusted for outcome correlation
+Eff<-dat.emp_comp_uc$R_affective-dat.emp_comp_uc$R_cognitive
+Eff_var<-dat.emp_comp_uc$R_var_affective+dat.emp_comp_uc$R_var_cognitive-2*Aff_cog_cor*sqrt(dat.emp_comp_uc$R_var_affective*dat.emp_comp_uc$R_var_cognitive)
+
+#note that I stupidly changed naming conventions here - sorry
+#the Eff variable is corrected for attentuation, censored when an effect was < -1, and adjusted for the dependent nature of the correlations where possible
+dat.emp_comp_uc$Eff<-Eff
+dat.emp_comp_uc$Eff_var<-Eff_var
+
+fit.emp_comp_uc<-rma(yi=Eff, 
+                  vi=Eff_var, 
+                  weights = 1/Eff_var, 
+                  data=dat.emp_comp_uc, 
+                  ni=N
+)
+
+summary(fit.emp_comp_uc)
