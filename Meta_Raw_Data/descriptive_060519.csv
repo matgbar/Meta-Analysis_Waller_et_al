@@ -1,0 +1,61 @@
+,Citation,Country,N,Mean age,% female,Type of sample,CU traits measure,CU traits respondent,Empathy measure,Prosocial,Guilt measure,Outcome respondent
+1,"Aitken, Henry, and Andrade (2018)",Canada,304,9.25,33,Clinical,IOWA,Parent,,SDQ,,Parent
+2,Anastassiou-Hadjicharalambous and Warden (2008),Scotland,66,9.36,4.55,Clinical,APSD,Parent & Teacher,BEI,,,Self
+3,Andrade and Wade (2016),Canada,208,8.8,21.6,Clinical,3 ICU items,Parent & Teacher,,SDQ,,Parent
+4,"Antoniadou, Kokkinos, and Markos (2016)",Greece,146,14.5,43,Community,YPI,Self,BES,,,Self
+5,Brouns et al. (2013),Netherlands,233,16.7,54,Community,APSD,Parent,IRI,,,Self
+6,"Chabrol, van Leeuwen, Rodgers, and Gibbs (2011)",France,972,16.7,39,Community,YPI,Self,IRI,,,Self
+7,Ciucci and Baroncelli (2014),Italy,529,12.7,53.3,Community,ICU,Self,HIFDS,,,Self
+8,"Crapanzano, Frick, Childs, and Terranova (2011)",USA,284,11.28,54.2,Community,APSD,Self,,CSBS,,Self
+9,Dadds et al. (2009),Australia,2760,7.79,49.8,Community,APSD & SDQ,Parent,GEM,,,Parent
+10,"Dadds, Cauchi, Wimalaweera, Hawes, and Brennan (2012)",Australia,195,10.52,24.4,Clinical,APSD & SDQ,Parent & Teacher,GEM,,,Parent
+11,Dadds et al. (2014),England,55,5.5,45.44,Clinical,APSD & SDQ,Parent,,SDQ,,Parent
+12,Dolan and Rennie (2007),England,115,16.2,0,Incarcerated,YPI,Self,IVE,,,Self
+13,Flight and Forth (2007),Canada,51,17.1,0,Community,PCL:YC,Self,IRI,,,Self
+14,"Foulkes, Neumann, Roberts, McCrory, and Viding (2017)",UK,558,12.89,50,Community ,APSD,Self,,,,Self
+15,"Georgiou, Kimonis, and Fanti (2018)",Greece,167,4.73,49.1,Community,ICU,Parent & Teacher,GEM,,,Parent
+16,Gillen et al. (2018),USA,144,15.24,34,Incarcerated,PCL:YV,Self,IRI,,,Self
+17,Gostisha et al. (2014),USA,50,16.09,0,Incarcerated,ICU,Self,IRI,,,Self
+18,Hawes and Dadds (2007),Australia,56,6.29,0,Clinical,APSD & SDQ,Parent,,SDQ,,Parent
+19,Hawes et al. (2014),USA,150,8.99,0,Clinical,ICU,Parent,,SCS,,Parent
+20,"Högström, Enebrink, and Ghaderi (2013)",Sweden,57,6.65,45.6,Community,APSD,Parent,,SDQ,,Parent
+21,Holmqvist (2008),Sweden,47,17,0,Incarcerated,PCL:SV,Interviewer,EI,,HCR - 20,Self
+22,"Kahn, Frick, Golmaryami, and Marsee (2017)",USA,107,15.5,0,Community,ICU,Self,BES,,,Self
+23,Kimonis et al. (2008),USA,248,15.47,24.2,Incarcerated,ICU,Self,EQI,,,Self
+24,"Kimonis, et al. (2016)",USA,214,4.7,46.7,Community,ICU,Parent & Teacher,GEM,SDQ,,Parent
+25,"Kongerslev, Bo, Forth, and Simonsen (2015)",Denmark,80,16.5,0,Incarcerated,ICU,Self,IRI,,,Self
+26,"Liu, Qiao, Dong, and Raine (2018)",China,860,11.54,47.9,Community,ICU,Self,CASES,,,Self
+27,"López-Romero, Gómez-Fraguela, and Romero (2015)",Spain,324,16.13,27.5,Incarcerated,ICU,Self,BES,,,Self
+28,"López-Romero, Romero, and Andershed (2015)",Spain,192,8.05,27.6,Community,ICU,Self,BES,,,Self
+29,López-Romero et al. (2018),Spain,449,7.43,51.40%,Community,APSD,Teacher,,SDQ,,Teacher
+30,"Lotze, Ravindran, and Myers (2010)",USA,50,9.8,62,Community,APSD,Self,,,TOSCA-C,Self
+31,"Lui, Barry, and Sacco (2016)",USA,103,16.9,32,Incarcerated,ICU,Self,GEM,,,Self
+32,"Malcolm-Smith, Woolley, and Ward (2015)",South Africa,114,6.58,36.8,Community,APSD & SDQ,Parent,GEM,,,Parent
+33,"Martin-Key, Brown, and Fairchild (2017)",UK,37,16.03,0,Incarcerated,ICU,Self,IRI,,,Self
+34,McDonald et al. (2018),USA,291,9.07,47,Community  ,ICU,Parent,GEM,,,Parent
+35,"Meehan, Maughan, Cecil, and Barker (2017)",England,6791,13,51.11,Community,IC measure,Parent,,SDQ,,Parent
+36,Milone et al. (2019),Italy,60,13.27,0,Clinical,APSD,Parent & Self,IRI,,,Self
+37,"Muñoz, Qualter, and Padgett (2011)",England,201,11.5,50,Community,ICU,Self,BES,,,Self
+38,"O’Kearney, Salmon, Liwag, Fortune, and Dawel (2017)",Australia,74,5.8,0,Community,ICU,Parent,GEM,,,Parent
+39,Ometto et al. (2016),Brazil,107,12.85,439,Clinical & Community,PCL:YV,Self,SSIA,,,self
+40,"Pardini, Lochman, and Frick (2003)",USA,169,15.8,42.6,Incarcerated,APSD-SR,Self,IRI,,,Self
+41,"Pasalich, Dadds, and Hawes (2014)",Australia,134,5.6,21,Clinical,APSD & SDQ,Parent & Teacher,GEM,,,Parent
+42,Pechorro et al. (2013),Portugal,261,15.8,16.8,Incarcerated,APSD-SR,Self,,SDQ,,Self
+43,"Pechorro, Ray, Salas-Wright, Maroco, and Gonçalves (2015)",Portugal,221,16.75,0,Incarcerated,"APSD, ICU",Self,BES,,,Self
+44,"Pechorro, Jiménez, Hidalgo, and Nunes (2015)",Portugal,299,15.89,32.7,Incarcerated,APSD-SR,Self,,SDQ-SR,,Self
+45,"Pechorro, Hidalgo, Nunes, and Jiménez (2016)",Portugal,438,17.15,0,Incarcerated,APSD-SR,Self,BES,,,Self
+46,"Pechorro, Hawes, Gonçalves, and Ray (2017)",Portugal,377,16.23,100,Incarcerated & community,ICU,Self,BES,,,Self
+47,Pijper et al. (2016),Netherlands,49,10.28,0,Clinical,APSD,Parent & Teacher,IECA & BES,,,Self
+48,Raine and Chen (2018),USA,428,11,49,Community,ICU,Self,CASES,,,Self
+49,"Roose, Bijttebier, Decoene, Claes, and Frick (2010)",Belgium,455,16.6,44,Community,ICU,"Self, Parent & Teacher",IRI,,,Self
+50,"Spice, Viljoen, Douglas, and Hart (2015)",Canada,97,15.88,29.9,Incarcerated,PCL:YV,Self,,,TOSCA-A,Self
+51,"Stickle, Marini, and Thomas (2012)",USA,150,15.2,40,Incarcerated,ICU,Self & Teacher,IRI,,,Self
+52,Vahl et al. (2014),Netherlands,365,16.5,0,Incarcerated,YPI-S,Self,,SDQ,,Self
+53,van Baardewijk et al. (2008),Netherlands,360,10.9,48,Community,YPI-CV,Self,BES,,,self
+54,van Vugt et al. (2012),Netherlands,85,17.54,0,Incarcerated,APSD & ICU,Self,BES,,,Self
+55,"Verschuere, Candel, Van Reenen, and Korebrits (2012)",Netherlands,57,16.75,0,Incarcerated,CPS,Self ,IRI,,,self
+56,"Viding, Simmonds, Petrides, and Frederickson (2009)",England,704,12,47,Community,ICU,Self,,SDQ,,Self
+57,"Waller, et al. (2015)",USA,240,3.42,49.16,Community,CBCL,Parent,My Child,,My Child,Parent
+58,"Wendt, Bartoli, and Arteche (2017)",England,249,10,53,Community,APSD,Self,,SDQ,,Self
+59,Whitt and Howard (2013),USA,707,15.5,13.01,Clinical,APSD,Self,PPI-SV,,,Self
+60,"Willoughby, Mills-Koonce, Waschbusch, Gottfredson, and Investigators (2015)",USA,1078,7.3,50,Community,ICU,Parent,,SDQ,,Parent

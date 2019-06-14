@@ -94,7 +94,7 @@ Id,citation,female,age,N,Mean_CU,N_CU,SD_CU,Mean_ctrl,N_ctrl,SD_ctrl,R,Outcome,E
 50,Spice et al. (2015),29.9,15.88,97,NA,NA,NA,NA,NA,NA,-0.38,guilt,-0.40005965,0.010638298,NA,NA,NA,NA,NA,NA,0,0,1,1.15,NA,self,self,0,same,referred/Clinical,0.88,0.86,
 51,Stickle et al. (2012),40,15.2,150,NA,NA,NA,NA,NA,NA,-0.289,empathy_tot,-0.297474787,0.006802721,NA,NA,NA,NA,NA,NA,1,1,1,1.4,NA,Other,Other,0,Same,Referred/Clinical,0.81,0.81,
 52,Vahl et al. (2014),0,16.5,365,NA,NA,NA,NA,NA,NA,-0.22,prosocial,-0.223656109,0.002762431,NA,NA,NA,NA,NA,NA,0,0,1,NA,NA,Self,Self,0,Same,Referred/Clinical,0.8,NA,
-53,van Baardewijk et al. (2008),48,10.9,360,NA,NA,NA,NA,NA,NA,-0.26,empathy_tot,-0.266108407,0.00280112,NA,NA,NA,NA,NA,NA,0,0,0,nA,nA,self,self,0,same,community/Non-clincal,NA,0.78,
+53,van Baardewijk et al. (2008),48,10.9,360,NA,NA,NA,NA,NA,NA,-0.26,empathy_tot,-0.266108407,0.00280112,NA,NA,NA,NA,NA,NA,0,0,0,nA,NA,self,self,0,same,community/Non-clincal,NA,0.78,
 54,van Vugt et al. (2012),0,17.54,85,NA,NA,NA,NA,NA,NA,-0.41,empathy_aff,-0.435611223,0.012195122,NA,NA,NA,NA,NA,NA,0,0,1,2.22,NA,Self,Self,0,Same,Referred/Clinical,0.78,0.67,
 54,van Vugt et al. (2012),0,17.54,85,NA,NA,NA,NA,NA,NA,-0.35,empathy_cog,-0.365443754,0.012195122,NA,NA,NA,NA,NA,NA,0,0,1,2.22,NA,Self,Self,0,Same,Referred/Clinical,0.78,NA,
 54,van Vugt et al. (2012),0,17.54,85,NA,NA,NA,NA,NA,NA,-0.285,empathy_tot,-0.293115727,0.012195122,NA,NA,NA,NA,NA,NA,0,0,1,2.22,NA,Self,Self,0,Same,Referred/Clinical,0.62,0.59,
