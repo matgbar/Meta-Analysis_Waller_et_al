@@ -1019,6 +1019,19 @@ fit.Emp_cog.mod_age<-rma(yi=Eff,
                          method = 'HS')
 summary(fit.Emp_cog.mod_age)  #So this is significant again (have to remake that figure)  
 
+#Empathy Difference Model:
+fit.emp_comp.mod_age<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var,
+                         mods = ~age, 
+                         data=dat.emp_comp, 
+                         ni=N, 
+                         knha=T, 
+                         method = 'HS')
+summary(fit.emp_comp.mod_age)  #So this is significant again (have to remake that figure)  
+
+
+
 #######################################################################################
 #Exploring moderators - Sample Type
 fit.emp_tot.mod_samp<-rma(yi=Eff, 
@@ -1119,6 +1132,17 @@ fit.emp_comp.mod_CU_resp<-rma(yi=Eff,
                              knha=T, 
                              method = 'HS')
 summary(fit.emp_comp.mod_CU_resp)  
+
+#Empathy Difference Model Robust test of respondent/age:
+fit.emp_comp.mod_age_CU_resp<-rma(yi=Eff, 
+                                  vi=Eff_var,
+                                  weights = 1/Eff_var,
+                                  mods = ~age + CU_resp, 
+                                  data=dat.emp_comp, 
+                                  ni=N, 
+                                  knha=T, 
+                                  method = 'HS')
+summary(fit.emp_comp.mod_age_CU_resp)  #So this is significant again (have to remake that figure)  
 
 #######################################################################################
 #Exploring moderators - Outcome respondent
