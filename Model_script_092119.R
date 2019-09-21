@@ -21,6 +21,8 @@ data.folder<-paste0(wd, '/Meta_Raw_Data')
 model.folder<-paste0(wd, '/Output')
 graphics.folder<-paste0(wd, '/Graphics_Folder' )
 
+#Use load function to bring in previous environment: 
+#load(paste0(data.folder, '/Final_Data_061319.RData'))
 #################################################################################
 #Notes:   1. Correlations were transformed to Fisher's z
 #         2. Standardized mean differences were transformed to r then to Fisher's z
@@ -147,14 +149,14 @@ hist(dat.imp$Eff)
 #Adding variances for what were originally correlations. 
 dat.imp$Eff_var[is.na(dat$d)]<-dat.imp$R_var[is.na(dat$d)]/sqrt(dat.imp$CU_Rel[is.na(dat$d)]*dat.imp$Out_Rel[is.na(dat$d)])
 
-#This is the new analytic data set
+#Generating descriptive states for imputed data set
 sink(paste0(model.folder, '/Imputed_Descriptives.txt'))
 psych::describe(dat.imp)
 sink()
 
 dat_descrip<-read.csv(paste0(data.folder, '/descriptive_060519.csv'))
 colnames(dat_descrip)[1]<-"Id"
-dat_descrip$ICU<-as.numeric(str_detect(dat_descrip$CU.traits.measure, 'ICU'))
+dat_descrip$ICU<-as.numeric(grepl('ICU', dat_descrip$CU.traits.measure))
 table(dat_descrip$ICU)
 
 dat.imp<-merge(dat.imp, dat_descrip[,c("Id", "ICU")], by = "Id")
@@ -355,6 +357,7 @@ sink(paste0(model.folder, '/Prosocial_AC.txt'))
 summary(fit.prosoc)
 sink()
 
+#Note - depending on your encoding this may not run (will return an error for UTF-8)
 tiff(paste0(graphics.folder, '/CU and Prosocialty - Forest.tiff'), res=300, width = 7, height=7, units='in')
 forest.rma(fit.prosoc, order = 'obs', slab=dat.prosoc$citation)
 title("Relation between CU Traits and Prosocialty")
@@ -501,16 +504,6 @@ tiff(paste0(graphics.folder, '/Difference in Empathy Model - Forest.tiff'), res=
 forest.rma(fit.emp_comp, order = 'obs', slab=dat.emp_comp$citation)
 title("Difference in Relation between CU and Empathy Dimensions")
 dev.off()
-
-fit.emp_comp_bias<-rma(yi=R, 
-                       vi=R_var,
-                       data=dat.emp_comp, 
-                       ni=N)
-
-summary(fit.emp_comp_bias)
-
-#forest.rma(fit.emp_comp_bias, order = 'obs', slab=dat.emp_comp$citation)
-#title("Difference in Relation between CU and Empathy Dimensions")
 
 #############################################################################
 #Extracting model summary for Each constrast
@@ -1030,6 +1023,29 @@ fit.emp_comp.mod_age<-rma(yi=Eff,
                          method = 'HS')
 summary(fit.emp_comp.mod_age)  #So this is significant again (have to remake that figure)  
 
+#Based on reviewer feedback - ran additional model 
+#Only includes samples with mean age > 8 
+#Addresses indirectly confound with informant and effect of age on association magnitude
+fit.emp_cog.mod_age_gt8<-rma(yi=Eff, 
+                             vi=Eff_var,
+                             weights = 1/Eff_var,
+                             mods = ~age, 
+                             data=dat.Emp_cog[dat.Emp_cog$age > 8,], 
+                             ni=N, 
+                             knha=T, 
+                             method = 'HS')
+summary(fit.emp_cog.mod_age_gt8)  #So this is significant again (have to remake that figure)  
+
+#An alternative to dropping the sample size down - controlling for respondent
+fit.emp_comp.mod_age_CU_resp<-rma(yi=Eff, 
+                                  vi=Eff_var,
+                                  weights = 1/Eff_var,
+                                  mods = ~age + CU_resp, 
+                                  data=dat.Emp_cog, 
+                                  ni=N, 
+                                  knha=T, 
+                                  method = 'HS')
+summary(fit.emp_comp.mod_age_CU_resp)  #So this is significant again (have to remake that figure)  
 
 
 #######################################################################################
@@ -1359,14 +1375,13 @@ dev.off()
 age<-seq(min(dat.Emp_cog$age), max(dat.Emp_cog$age), by = .01)
 
 emp_cog.age.pred<-predict(fit.Emp_cog.mod_age, newmods = age, level = 95)
-emp_cog.age.orig<-predict(fit.Emp_cog.mod_age, newmods = dat.Emp_cog$age, level = 95)
 
 emp_cog.age.DF<-data.frame(pred_y = emp_cog.age.pred$pred, 
                            CI_LB = emp_cog.age.pred$ci.lb, 
                            CI_UB = emp_cog.age.pred$ci.ub, 
                            Age = age)
-dat.Emp_cog$CI_age_LB<-emp_cog.age.orig$ci.lb-emp_cog.age.orig$pred
-dat.Emp_cog$CI_age_UB<-emp_cog.age.orig$ci.ub-emp_cog.age.orig$pred
+dat.Emp_cog$CI_age_LB<-emp_cog.age.pred$ci.lb-emp_cog.age.pred$pred
+dat.Emp_cog$CI_age_UB<-emp_cog.age.pred$ci.ub-emp_cog.age.pred$pred
 
 
 g.cog3<-ggplot()+
@@ -1407,6 +1422,62 @@ g.cog3<-ggplot()+
 
 tiff(paste0(graphics.folder, '/Cog_Moderated_by_Age.tiff'), res=300, units='in', height=8, width=11)
 g.cog3
+dev.off()
+
+#############################################################################################################################
+# Difference in association between empathy dimensions and CU as a function of age 
+age<-seq(min(dat.emp_comp$age), max(dat.emp_comp$age), by = .01)
+
+emp_comp.age.pred<-predict(fit.emp_comp.mod_age, newmods = dat.emp_comp$age, level = 95)
+
+emp_comp.age.DF<-data.frame(pred_y = emp_comp.age.pred$pred, 
+                           CI_LB = emp_comp.age.pred$ci.lb, 
+                           CI_UB = emp_comp.age.pred$ci.ub, 
+                           Age = age)
+dat.emp_comp$CI_age_LB<-emp_comp.age.pred$ci.lb-emp_comp.age.pred$pred
+dat.emp_comp$CI_age_UB<-emp_comp.age.pred$ci.ub-emp_comp.age.pred$pred
+
+
+g.emp_comp<-ggplot()+
+  geom_ribbon(data = emp_comp.age.DF, 
+              aes(ymin = CI_LB, 
+                  ymax = CI_UB, 
+                  x = Age),
+              fill = color_scheme_get(scheme = "blue")[[2]], 
+              alpha = .75)+
+  geom_line(data = emp_comp.age.DF, 
+            aes(x = Age, 
+                y = pred_y),
+            color = color_scheme_get(scheme = "blue")[[6]], 
+            lwd = 2, 
+            inherit.aes = FALSE)+
+  geom_point(data = dat.emp_comp, 
+             aes(x = age, 
+                 y = Eff, 
+                 size = N), 
+             inherit.aes = FALSE, 
+             alpha = .5)+
+  geom_errorbar(data = dat.emp_comp,
+                aes(ymin = Eff + CI_age_LB, 
+                    ymax = Eff + CI_age_UB, 
+                    x = age), 
+                inherit.aes = FALSE, 
+                alpha = .5, 
+                width = 0)+
+  geom_hline(yintercept = 0, lty='dashed', color = 'red')+
+  scale_size_continuous(expression(italic('N')), 
+                        range = c(1, 10), 
+                        breaks = seq(250, 1250, by = 250))+
+  ylab(expression(~Delta~rho))+
+  xlab('Age (years)')+
+  ggtitle("Moderation of the Difference in the Association between CU Traits and Empathy Dimensions by Sample Mean Age")+
+  annotate(geom = 'text', x = 8, y = -.4, label = "Affective ~ CU Traits is Stronger")+
+  annotate(geom = 'text', x = 14, y = .6, label = "Cognitive ~ CU Traits is Stronger")+
+  theme_bw()
+
+
+tiff(paste0(graphics.folder, '/Emp_comp_Moderated_by_Age.tiff'), res=300, units='in', height=8, width=11)
+g.emp_comp
 dev.off()
 
 #############################################################################################################################
@@ -1702,56 +1773,3 @@ cowplot::plot_grid(g.Emp_tot, g.Emp_aff, g.Emp_cog, g.prosoc, g.glt,
                    rel_heights = c(5, 3, 3, 3, 1),
                    align = "v")
 dev.off()
-
-#############################################################################################################################
-library(metaSEM)
-library(RColorBrewer)
-#############################################################################################################################
-
-#IMPORTANT - Section is exploratory and not updated with current report
-
-#With Total Empathy Scores (this seems totally crazy to me...):
-dat.meta3<-dat.imp[dat.imp$Emp_cog!=1,]
-dat.meta3<-dat.meta3[dat.meta3$Emp_aff!=1,]
-
-#Total of 49 effects left..
-y<-dat.meta3$Eff
-v<-dat.meta3$Eff_var
-ID<-dat.meta3$id    #Note that this currently still has some within study break down by gender
-
-#Prepping covariate matrix - for effects (at level 2)
-x<-matrix(ncol=3, nrow = 49)
-x[,1]<-dat.meta3$prosocial  #prosocial as the target category.
-x[,2]<-dat.meta3$guilt    #guilt as the target category
-x[,3]<-ifelse(dat.meta3$prosocial+dat.meta3$guilt>=1, 0, 1)
-
-colnames(x)<-c('Prosocial', 
-               'Guilt', 
-               'Total Empathy')
-
-#fitting null model
-fit.meta_null<-meta3(y=y,
-                     v=v,
-                     cluster = ID
-                     )
-
-sink(paste0(model.folder, 'Three-level_Null_Model.txt'))
-summary(fit.meta_null)  #provides a sense of overall effect across all three constructs
-sink()
-
-#Modeling Intercept as Total Empathy
-fit.meta_Emp_tot<-meta3(y=y,
-                        v=v,
-                        cluster = ID,
-                        x = x[,1:2]
-)
-
-sink(paste0(model.folder, 'Three-level_Emp_tot_Model.txt'))
-summary(fit.meta_Emp_tot)
-sink()
-
-#Variance Decomposition
-dat.meta3[,16:18]<-x
-colnames(dat.meta3)[16:18]<-c('Prosocial', 
-                              'Guilt', 
-                              'Total Empathy')
