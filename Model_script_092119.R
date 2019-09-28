@@ -1294,6 +1294,27 @@ fit.emp_comp.mod_ICU<-rma(yi=Eff,
 summary(fit.emp_comp.mod_ICU)  
 
 #############################################################################################################################
+fit.Emp_cog.mod_sig<-rma(yi=Eff, 
+                         vi=Eff_var,
+                         weights = 1/Eff_var,
+                         mods = ~age+Out_resp, 
+                         data=dat.Emp_cog, 
+                         ni=N, 
+                         knha=T, 
+                         method = 'HS')
+summary(fit.Emp_cog.mod_sig)  
+
+fit.emp_comp.mod_sig<-rma(yi=Eff, 
+                          vi=Eff_var,
+                          weights = 1/Eff_var,
+                          mods = ~age+CU_resp+Out_resp, 
+                          data=dat.emp_comp, 
+                          ni=N, 
+                          knha=T, 
+                          method = 'HS')
+summary(fit.emp_comp.mod_sig) 
+
+#############################################################################################################################
 #First plot is contrast of marginal interaction effects for CU respondent & association w/ affective vs. cognitive empathy
 CU_resp<-c(0,1)
 emp_aff.CU_resp.pred<-predict(fit.Emp_aff.mod_CU_resp, newmods = CU_resp, level = 95)
