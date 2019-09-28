@@ -14,6 +14,7 @@ library(ggplot2)
 library(ggridges)
 library(mice)
 library(bayesplot)
+library(forcats)
 #################################################################################
 #For Windows Laptop
 wd<-'~/GitHub/Meta-Analysis_Waller_et_al'
@@ -21,8 +22,6 @@ data.folder<-paste0(wd, '/Meta_Raw_Data')
 model.folder<-paste0(wd, '/Output')
 graphics.folder<-paste0(wd, '/Graphics_Folder' )
 
-#Use load function to bring in previous environment: 
-#load(paste0(data.folder, '/Final_Data_061319.RData'))
 #################################################################################
 #Notes:   1. Correlations were transformed to Fisher's z
 #         2. Standardized mean differences were transformed to r then to Fisher's z
@@ -90,7 +89,7 @@ dat.imp<-dat[c('Id',
 ini <- mice(dat.imp, maxit = 0)
 ini$nmis  #Missing 12 CU reliabilities and 13 outcome reliabilities
 
-imp<-mice(dat.imp[,2:ncol(dat.imp)], maxit=100, m=5)
+imp<-mice(dat.imp[,2:ncol(dat.imp)], maxit=100, m=5, seed = 91486)
 
 png(paste0(graphics.folder, '/MICE_Imputation_convergence.png'), 
     res=300, 
@@ -922,6 +921,18 @@ fit.Emp_cog.mod_all<-rma(yi=Eff,
                         method = 'HS')
 summary(fit.Emp_cog.mod_all)  
 
+#Empathy Difference Model:
+table(dat.emp_comp$CU_resp, dat.emp_comp$Out_resp)
+fit.emp_comp.mod_all<-rma(yi=Eff, 
+                          vi=Eff_var,
+                          weights = 1/Eff_var,
+                          mods = ~female+age+Samp_typ+CU_resp+Out_resp+ICU, 
+                          data=dat.emp_comp, 
+                          ni=N, 
+                          knha=T, 
+                          method = 'HS')
+summary(fit.emp_comp.mod_all) 
+
 ##############################################################################################
 #Exploring single moderators now - Female
 fit.emp_tot.mod_female<-rma(yi=Eff, 
@@ -966,6 +977,17 @@ fit.Emp_cog.mod_female<-rma(yi=Eff,
                          knha=T, 
                          method = 'HS')
 summary(fit.Emp_cog.mod_female)  
+
+#Empathy Difference Model:
+fit.emp_comp.mod_female<-rma(yi=Eff, 
+                             vi=Eff_var,
+                             weights = 1/Eff_var,
+                             mods = ~female, 
+                             data=dat.emp_comp, 
+                             ni=N, 
+                             knha=T, 
+                             method = 'HS')
+summary(fit.emp_comp.mod_female)
 
 #############################################################################################
 #Exploring Moderators - age only
@@ -1093,6 +1115,17 @@ fit.Emp_cog.mod_samp<-rma(yi=Eff,
                          method = 'HS')
 summary(fit.Emp_cog.mod_samp)
 
+#Empathy Difference Model:
+fit.emp_comp.mod_samp<-rma(yi=Eff, 
+                             vi=Eff_var,
+                             weights = 1/Eff_var,
+                             mods = ~Samp_typ, 
+                             data=dat.emp_comp, 
+                             ni=N, 
+                             knha=T, 
+                             method = 'HS')
+summary(fit.emp_comp.mod_samp)
+
 #######################################################################################
 #Exploring moderators - CU_respondent
 fit.emp_tot.mod_CU_resp<-rma(yi=Eff, 
@@ -1149,17 +1182,6 @@ fit.emp_comp.mod_CU_resp<-rma(yi=Eff,
                              method = 'HS')
 summary(fit.emp_comp.mod_CU_resp)  
 
-#Empathy Difference Model Robust test of respondent/age:
-fit.emp_comp.mod_age_CU_resp<-rma(yi=Eff, 
-                                  vi=Eff_var,
-                                  weights = 1/Eff_var,
-                                  mods = ~age + CU_resp, 
-                                  data=dat.emp_comp, 
-                                  ni=N, 
-                                  knha=T, 
-                                  method = 'HS')
-summary(fit.emp_comp.mod_age_CU_resp)  #So this is significant again (have to remake that figure)  
-
 #######################################################################################
 #Exploring moderators - Outcome respondent
 fit.emp_tot.mod_Out_resp<-rma(yi=Eff, 
@@ -1205,6 +1227,16 @@ fit.Emp_cog.mod_Out_resp<-rma(yi=Eff,
                              method = 'HS')
 summary(fit.Emp_cog.mod_Out_resp) #Significant - need this plotted for sure  
 
+#Empathy difference model
+fit.emp_comp.mod_Out_resp<-rma(yi=Eff, 
+                              vi=Eff_var,
+                              weights = 1/Eff_var,
+                              mods = ~Out_resp, 
+                              data=dat.emp_comp, 
+                              ni=N, 
+                              knha=T, 
+                              method = 'HS')
+summary(fit.emp_comp.mod_Out_resp)  
 #######################################################################################
 #Exploring moderators - ICU respondent
 fit.emp_tot.mod_ICU<-rma(yi=Eff, 
@@ -1249,6 +1281,17 @@ fit.Emp_cog.mod_ICU<-rma(yi=Eff,
                               knha=T, 
                               method = 'HS')
 summary(fit.Emp_cog.mod_ICU)  
+
+#Empathy Difference Model
+fit.emp_comp.mod_ICU<-rma(yi=Eff, 
+                          vi=Eff_var,
+                          weights = 1/Eff_var,
+                          mods = ~ICU, 
+                          data=dat.emp_comp, 
+                          ni=N, 
+                          knha=T, 
+                          method = 'HS')
+summary(fit.emp_comp.mod_ICU)  
 
 #############################################################################################################################
 #First plot is contrast of marginal interaction effects for CU respondent & association w/ affective vs. cognitive empathy
@@ -1374,14 +1417,15 @@ dev.off()
 ###############################################################################
 age<-seq(min(dat.Emp_cog$age), max(dat.Emp_cog$age), by = .01)
 
+emp_cog.age.orig<-predict(fit.Emp_cog.mod_age, level = 95)
 emp_cog.age.pred<-predict(fit.Emp_cog.mod_age, newmods = age, level = 95)
 
 emp_cog.age.DF<-data.frame(pred_y = emp_cog.age.pred$pred, 
                            CI_LB = emp_cog.age.pred$ci.lb, 
                            CI_UB = emp_cog.age.pred$ci.ub, 
                            Age = age)
-dat.Emp_cog$CI_age_LB<-emp_cog.age.pred$ci.lb-emp_cog.age.pred$pred
-dat.Emp_cog$CI_age_UB<-emp_cog.age.pred$ci.ub-emp_cog.age.pred$pred
+dat.Emp_cog$CI_age_LB<-emp_cog.age.orig$ci.lb-emp_cog.age.orig$pred
+dat.Emp_cog$CI_age_UB<-emp_cog.age.orig$ci.ub-emp_cog.age.orig$pred
 
 
 g.cog3<-ggplot()+
@@ -1428,14 +1472,15 @@ dev.off()
 # Difference in association between empathy dimensions and CU as a function of age 
 age<-seq(min(dat.emp_comp$age), max(dat.emp_comp$age), by = .01)
 
-emp_comp.age.pred<-predict(fit.emp_comp.mod_age, newmods = dat.emp_comp$age, level = 95)
+emp_comp.age.orig<-predict(fit.emp_comp.mod_age, level = 95)
+emp_comp.age.pred<-predict(fit.emp_comp.mod_age, newmods = age, level = 95)
 
 emp_comp.age.DF<-data.frame(pred_y = emp_comp.age.pred$pred, 
-                           CI_LB = emp_comp.age.pred$ci.lb, 
-                           CI_UB = emp_comp.age.pred$ci.ub, 
-                           Age = age)
-dat.emp_comp$CI_age_LB<-emp_comp.age.pred$ci.lb-emp_comp.age.pred$pred
-dat.emp_comp$CI_age_UB<-emp_comp.age.pred$ci.ub-emp_comp.age.pred$pred
+                            CI_LB = emp_comp.age.pred$ci.lb, 
+                            CI_UB = emp_comp.age.pred$ci.ub, 
+                            Age = age)
+dat.emp_comp$CI_age_LB<-emp_comp.age.orig$ci.lb-emp_comp.age.orig$pred
+dat.emp_comp$CI_age_UB<-emp_comp.age.orig$ci.ub-emp_comp.age.orig$pred
 
 
 g.emp_comp<-ggplot()+

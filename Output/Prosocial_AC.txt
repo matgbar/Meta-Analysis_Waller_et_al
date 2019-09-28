@@ -2,20 +2,20 @@
 Random-Effects Model (k = 19; tau^2 estimator: HS)
 
   logLik  deviance       AIC       BIC      AICc 
-  3.5487   67.5477   -3.0975   -1.2086   -2.3475   
+  5.9582   63.2343   -7.9165   -6.0276   -7.1665   
 
-tau^2 (estimated amount of total heterogeneity): 0.0099 (SE = 0.0045)
-tau (square root of estimated tau^2 value):      0.0996
-I^2 (total heterogeneity / total variability):   85.71%
-H^2 (total variability / sampling variability):  7.00
+tau^2 (estimated amount of total heterogeneity): 0.0118 (SE = 0.0052)
+tau (square root of estimated tau^2 value):      0.1088
+I^2 (total heterogeneity / total variability):   88.30%
+H^2 (total variability / sampling variability):  8.55
 
 Test for Heterogeneity:
-Q(df = 18) = 175.7648, p-val < .0001
+Q(df = 18) = 224.6887, p-val < .0001
 
 Model Results:
 
 estimate      se      zval    pval    ci.lb    ci.ub 
- -0.7096  0.0561  -12.6463  <.0001  -0.8196  -0.5996  *** 
+ -0.6556  0.0638  -10.2710  <.0001  -0.7807  -0.5305  *** 
 
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
