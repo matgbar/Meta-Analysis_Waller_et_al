@@ -39,6 +39,8 @@ graphics.folder<-paste0(wd, '/Graphics_Folder' )
 
 #################################################################################
 #Or can load latest data from GitHub
+#load(paste0(data.folder, '/Model_Environment.RData'))
+#################################################################################
 dat_raw<-read.csv(paste0(data.folder, '/Updated_Effect_Data_061119.csv'))
 head(dat_raw) #Column 34 looks mainly empty (NAs)
 
@@ -1056,7 +1058,7 @@ fit.emp_cog.mod_age_gt8<-rma(yi=Eff,
                              ni=N, 
                              knha=T, 
                              method = 'HS')
-summary(fit.emp_cog.mod_age_gt8)  #So this is significant again (have to remake that figure)  
+summary(fit.emp_cog.mod_age_gt8)  #So this is significant again (have to remake that figure) 
 
 #An alternative to dropping the sample size down - controlling for respondent
 fit.emp_comp.mod_age_CU_resp<-rma(yi=Eff, 
@@ -1068,7 +1070,6 @@ fit.emp_comp.mod_age_CU_resp<-rma(yi=Eff,
                                   knha=T, 
                                   method = 'HS')
 summary(fit.emp_comp.mod_age_CU_resp)  #So this is significant again (have to remake that figure)  
-
 
 #######################################################################################
 #Exploring moderators - Sample Type
@@ -1171,6 +1172,17 @@ fit.Emp_cog.mod_CU_resp<-rma(yi=Eff,
                          method = 'HS')
 summary(fit.Emp_cog.mod_CU_resp)  
 
+#Also looking at cognitive empathy ~~ CU traits as a function of Informant for samples > 8 mean age
+fit.emp_cog.mod_CU_resp_gt8<-rma(yi=Eff, 
+                             vi=Eff_var,
+                             weights = 1/Eff_var,
+                             mods = ~CU_resp, 
+                             data=dat.Emp_cog[dat.Emp_cog$age > 8,], 
+                             ni=N, 
+                             knha=T, 
+                             method = 'HS')
+summary(fit.emp_cog.mod_CU_resp_gt8)  #So this is significant again (have to remake that figure) 
+
 #Interesting that we have opposing directions here (worth exploring visually)
 fit.emp_comp.mod_CU_resp<-rma(yi=Eff, 
                              vi=Eff_var,
@@ -1226,6 +1238,17 @@ fit.Emp_cog.mod_Out_resp<-rma(yi=Eff,
                              knha=T, 
                              method = 'HS')
 summary(fit.Emp_cog.mod_Out_resp) #Significant - need this plotted for sure  
+
+#Also looking at cognitive empathy ~~ CU traits as a function of Informant for samples > 8 mean age
+fit.emp_cog.mod_Out_resp_gt8<-rma(yi=Eff, 
+                             vi=Eff_var,
+                             weights = 1/Eff_var,
+                             mods = ~Out_resp, 
+                             data=dat.Emp_cog[dat.Emp_cog$age > 8,], 
+                             ni=N, 
+                             knha=T, 
+                             method = 'HS')
+summary(fit.emp_cog.mod_Out_resp_gt8)  #So this is significant again (have to remake that figure) 
 
 #Empathy difference model
 fit.emp_comp.mod_Out_resp<-rma(yi=Eff, 
