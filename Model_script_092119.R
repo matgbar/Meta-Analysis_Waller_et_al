@@ -1560,8 +1560,6 @@ g.emp_comp<-ggplot()+
   ylab(expression(~Delta~rho))+
   xlab('Age (years)')+
   ggtitle("Moderation of the Difference in the Association between CU Traits and Empathy Dimensions by Sample Mean Age")+
-  annotate(geom = 'text', x = 8, y = -.4, label = "Affective ~ CU Traits is Stronger")+
-  annotate(geom = 'text', x = 14, y = .6, label = "Cognitive ~ CU Traits is Stronger")+
   theme_bw()
 
 
